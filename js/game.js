@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Render Building ---
   function renderBuilding() {
     const newSrc = getBuildingImage();
-    if (buildingImg.src !== newSrc) {
+    if (!buildingImg.src.endsWith(newSrc)) {
       buildingImg.style.opacity = '0';
       setTimeout(() => {
         buildingImg.src = newSrc;
