@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Finance4Fun — Build your own investment bank! Earn FinCoins by learning, then upgrade your firm in this 16-bit pixel art game.">
+  <title>Finance4Fun — Firm Builder Game</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body class="game-page">
+
+  <!-- Navigation -->
+  <nav class="navbar" id="main-nav">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-icon">F4</div>
+        <div class="nav-brand-text">Finance<span>4Fun</span></div>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="learn.html" class="nav-link">Learn</a>
+        <a href="quiz.html" class="nav-link">Quiz <span class="lock-icon">🔒</span></a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+        <a href="game.html" class="nav-link">Game <span class="beta-badge">β</span></a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="game-container">
+
+      <!-- Setup Screen (Name Your Firm) -->
+      <div class="game-setup" id="game-setup">
+        <img src="images/game/firm-level-1.png" alt="Your future firm" class="game-setup-building">
+        <h1 class="game-setup-title">Build Your<br>Investment Bank</h1>
+        <p class="game-setup-subtitle">Earn FinCoins by studying flashcards &<br>acing quizzes. Spend them here!</p>
+        <input 
+          type="text" 
+          id="firm-name-input" 
+          class="game-setup-input" 
+          placeholder="Name your firm..." 
+          maxlength="24"
+          autocomplete="off"
+        >
+        <button class="game-setup-btn" id="start-firm-btn" disabled>
+          FOUND YOUR FIRM →
+        </button>
+      </div>
+
+      <!-- Main Game Screen -->
+      <div id="game-main" style="display: none;">
+
+        <!-- HUD -->
+        <div class="game-hud">
+          <div class="game-hud-left">
+            <div class="game-firm-name" id="firm-name-display">My Firm</div>
+            <div class="game-firm-level" id="firm-level-display">Level 1 — Investment Bank</div>
+          </div>
+          <div class="game-hud-right">
+            <span class="game-coin-icon">🪙</span>
+            <span class="game-coin-balance" id="coin-balance-display">0</span>
+            <span style="color: #ffd700; font-family: 'Press Start 2P', monospace; font-size: 0.5rem;">FC</span>
+          </div>
+        </div>
+
+        <!-- Building Display -->
+        <div class="game-building-area">
+          <img id="building-img" class="game-building-img" src="images/game/firm-level-1.png" alt="Your firm">
+        </div>
+
+        <!-- Upgrade Shop -->
+        <div class="game-shop">
+          <div class="game-shop-title">⚡ UPGRADES</div>
+          <div class="game-upgrades-grid" id="upgrades-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="background: #0a0a1a; border-top: 2px solid #0f3460;">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand-text">Finance<span>4Fun</span></div>
+          <p>Making finance education accessible, engaging, and — dare we say — fun.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <a href="learn.html">Flashcards</a>
+          <a href="quiz.html">Quizzes</a>
+          <a href="glossary.html">Glossary</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Finance4Fun. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/coins.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+/* ============================================
+   FINANCE4FUN — Game Page Styles
+   16-bit Pixel Art Aesthetic
+   Fully isolated — all classes prefixed with .game-
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Game Page Background --- */
+.game-page {
+  background: #1a1a2e;
+  min-height: 100vh;
+}
+
+.game-page .page-content {
+  background: #1a1a2e;
+}
+
+/* --- Beta Badge in Nav --- */
+.beta-badge {
+  font-size: 0.6rem;
+  background: #C4785B;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* --- Game Container --- */
+.game-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* --- Game Header / HUD --- */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  padding: 16px 24px;
+  margin-bottom: var(--space-lg);
+  font-family: 'Press Start 2P', monospace;
+}
+
+.game-hud-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.game-firm-name {
+  color: #e2e2e2;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+.game-firm-level {
+  color: #8a8aff;
+  font-size: 0.6rem;
+}
+
+.game-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-coin-icon {
+  font-size: 1.2rem;
+}
+
+.game-coin-balance {
+  color: #ffd700;
+  font-size: 0.85rem;
+  font-family: 'Press Start 2P', monospace;
+}
+
+/* --- Building Display --- */
+.game-building-area {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 350px;
+  background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 70%, #0f3460 100%);
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stars background effect */
+.game-building-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 40%;
+  background-image: 
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 40% 25%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 55% 5%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 70% 18%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 85% 12%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 15% 30%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 60% 30%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 90% 28%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 35% 35%, rgba(255,255,255,0.3), transparent);
+}
+
+/* Ground line */
+.game-building-area::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: #0a0a1a;
+  border-top: 2px solid #2a2a4a;
+}
+
+.game-building-img {
+  max-height: 300px;
+  width: auto;
+  image-rendering: auto;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.15));
+  transition: all 0.5s ease;
+}
+
+/* --- Upgrade Shop --- */
+.game-shop {
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.game-shop-title {
+  font-family: 'Press Start 2P', monospace;
+  color: #e2e2e2;
+  font-size: 0.75rem;
+  margin-bottom: var(--space-md);
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.game-upgrades-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.game-upgrade-card {
+  background: #1a1a2e;
+  border: 2px solid #2a2a5a;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.game-upgrade-card:hover:not(.game-upgrade-maxed) {
+  border-color: #ffd700;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+}
+
+.game-upgrade-card.game-upgrade-maxed {
+  opacity: 0.5;
+  cursor: default;
+  border-color: #5b8c5a;
+}
+
+.game-upgrade-card.game-upgrade-locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.game-upgrade-icon {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.game-upgrade-name {
+  font-family: 'Press Start 2P', monospace;
+  color: #e2e2e2;
+  font-size: 0.55rem;
+  margin-bottom: 6px;
+}
+
+.game-upgrade-tier {
+  color: #8a8aff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  margin-bottom: 10px;
+}
+
+.game-upgrade-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: #ffd700;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+}
+
+.game-upgrade-cost.game-affordable {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: #ffd700;
+}
+
+.game-upgrade-maxed-text {
+  color: #5b8c5a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+}
+
+/* --- Setup Screen (Name Your Firm) --- */
+.game-setup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.game-setup-title {
+  font-family: 'Press Start 2P', monospace;
+  color: #e2e2e2;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.game-setup-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  color: #8a8aff;
+  font-size: 0.55rem;
+  margin-bottom: var(--space-xl);
+  line-height: 1.8;
+}
+
+.game-setup-building {
+  max-height: 200px;
+  margin-bottom: var(--space-lg);
+  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.2));
+}
+
+.game-setup-input {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  color: #e2e2e2;
+  background: #1a1a2e;
+  border: 2px solid #0f3460;
+  border-radius: 6px;
+  padding: 14px 20px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: var(--space-md);
+}
+
+.game-setup-input:focus {
+  border-color: #ffd700;
+}
+
+.game-setup-input::placeholder {
+  color: #4a4a6a;
+}
+
+.game-setup-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  color: #1a1a2e;
+  background: #ffd700;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 32px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.game-setup-btn:hover {
+  background: #ffed4a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.game-setup-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- Coin Popup Animation --- */
+.game-coin-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(22, 33, 62, 0.95);
+  border: 2px solid #ffd700;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: #ffd700;
+  z-index: 9999;
+  animation: game-popup-in 0.3s ease, game-popup-out 0.3s ease 1.2s forwards;
+  pointer-events: none;
+}
+
+@keyframes game-popup-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes game-popup-out {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .game-upgrades-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-hud {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .game-building-img {
+    max-height: 200px;
+  }
+
+  .game-setup-title {
+    font-size: 0.75rem;
+  }
+}

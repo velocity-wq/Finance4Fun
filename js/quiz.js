@@ -276,6 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedBtn.classList.add('correct');
       score++;
       quizScoreEl.textContent = `Score: ${score}`;
+      // Award FinCoins for correct answer
+      if (typeof F4FCoins !== 'undefined') F4FCoins.add(5);
     } else {
       selectedBtn.classList.add('incorrect');
       const q = questions[currentQuestion];
@@ -328,6 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
       resultsIcon.textContent = '💪';
       resultsMessage.textContent = "Keep going! Head to the flashcards to study, then try again.";
     }
+
+    // Award FinCoins for completing a quiz
+    if (typeof F4FCoins !== 'undefined') F4FCoins.add(10);
 
     // If this was a free quiz, mark it as used
     if (isFreeQuizMode) {

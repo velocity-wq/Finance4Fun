@@ -128,6 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Flip card ---
   flashcardContainer.addEventListener('click', () => {
     flashcard.classList.toggle('flipped');
+    // Award FinCoin for studying
+    if (typeof F4FCoins !== 'undefined') F4FCoins.add(1);
   });
 
   // --- Navigation ---
