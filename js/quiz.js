@@ -1,5 +1,6 @@
 // ============================================
 // FINANCE4FUN — Quiz Engine
+// Hardened: safe DOM rendering, edge case handling
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,6 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let score = 0;
   let answered = false;
 
+  // --- Safety check: make sure all elements exist ---
+  if (!quizSetup || !quizArea || !quizOptions) {
+    console.error('Quiz: Required page elements not found.');
+    return;
+  }
+
   // --- Populate filter dropdowns ---
   Object.entries(CATEGORIES).forEach(([key, cat]) => {
     const opt = document.createElement('option');
@@ -61,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function generateQuestions() {
     const category = quizCategorySelect.value;
     const level = quizLevelSelect.value;
-    const count = parseInt(quizCountSelect.value);
+    const count = parseInt(quizCountSelect.value, 10);
 
     // Filter available terms
     let available = FINANCE_TERMS.filter(term => {
@@ -69,6 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const lvlMatch = level === 'all' || term.level === level;
       return catMatch && lvlMatch;
     });
+
+    // Need at least 2 terms to make a quiz (1 correct + at least 1 wrong)
+    if (available.length < 2) {
+      return false;
+    }
 
     // Shuffle
     available = shuffleArray([...available]);
@@ -78,39 +90,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Generate questions
     questions = selected.map(term => {
-      // Get 3 wrong answers from other terms
+      // Get wrong answers from OTHER terms (never the same as the correct one)
       const otherTerms = FINANCE_TERMS.filter(t => t.id !== term.id);
-      const wrongAnswers = shuffleArray(otherTerms).slice(0, 3).map(t => t.definition);
+      // Take up to 3 wrong answers (handle case where there are fewer than 3 other terms)
+      const numWrong = Math.min(3, otherTerms.length);
+      const wrongAnswers = shuffleArray([...otherTerms]).slice(0, numWrong);
 
-      // Build options
+      // Build options — truncate ONCE here
       const options = shuffleArray([
-        { text: term.definition, correct: true },
-        ...wrongAnswers.map(d => ({ text: truncateText(d, 120), correct: false }))
+        { text: truncateText(term.definition, 120), correct: true },
+        ...wrongAnswers.map(t => ({ text: truncateText(t.definition, 120), correct: false }))
       ]);
 
       return {
         term: term.term,
         category: term.category,
         level: term.level,
-        options: options.map(o => ({
-          ...o,
-          text: truncateText(o.text, 120)
-        }))
+        options: options
       };
-    });
-
-    // Also truncate correct answer text for consistency
-    questions.forEach(q => {
-      q.options = q.options.map(o => ({
-        text: truncateText(o.text, 120),
-        correct: o.correct
-      }));
     });
 
     return questions.length > 0;
   }
 
   function truncateText(text, maxLen) {
+    if (!text) return '';
     if (text.length <= maxLen) return text;
     return text.substring(0, maxLen).trim() + '…';
   }
@@ -126,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Start Quiz ---
   startQuizBtn.addEventListener('click', () => {
     if (!generateQuestions()) {
-      alert('Not enough terms in that category/level. Try a broader selection!');
+      alert('Not enough terms in that category/level to make a quiz. Try "All Categories" or "All Levels"!');
       return;
     }
     currentQuestion = 0;
@@ -137,10 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
     renderQuestion();
   });
 
-  // --- Render current question ---
+  // --- Render current question (safe DOM construction — no innerHTML with user data) ---
   function renderQuestion() {
     answered = false;
     const q = questions[currentQuestion];
+    if (!q) return;
+
     const letters = ['A', 'B', 'C', 'D'];
 
     quizQNum.textContent = `Question ${currentQuestion + 1}`;
@@ -149,14 +155,23 @@ document.addEventListener('DOMContentLoaded', () => {
     quizProgressFill.style.width = `${((currentQuestion) / questions.length) * 100}%`;
     quizQuestionText.textContent = `What is the definition of "${q.term}"?`;
 
+    // Clear previous options
     quizOptions.innerHTML = '';
+
     q.options.forEach((opt, i) => {
       const btn = document.createElement('button');
       btn.className = 'quiz-option';
-      btn.innerHTML = `
-        <span class="option-letter">${letters[i]}</span>
-        <span>${opt.text}</span>
-      `;
+
+      // Build option safely using DOM methods (no innerHTML)
+      const letterSpan = document.createElement('span');
+      letterSpan.className = 'option-letter';
+      letterSpan.textContent = letters[i] || '?';
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = opt.text;
+
+      btn.appendChild(letterSpan);
+      btn.appendChild(textSpan);
       btn.addEventListener('click', () => handleAnswer(btn, opt.correct, i));
       quizOptions.appendChild(btn);
     });
@@ -184,18 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
       // Show the correct one
       const q = questions[currentQuestion];
       q.options.forEach((opt, i) => {
-        if (opt.correct) {
+        if (opt.correct && allBtns[i]) {
           allBtns[i].classList.add('correct');
         }
       });
     }
 
     // Show next button
+    quizNextWrapper.style.display = 'block';
     if (currentQuestion < questions.length - 1) {
-      quizNextWrapper.style.display = 'block';
       quizNextBtn.textContent = 'Next Question →';
     } else {
-      quizNextWrapper.style.display = 'block';
       quizNextBtn.textContent = 'See Results →';
     }
   }
@@ -215,7 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
     quizArea.style.display = 'none';
     quizResults.style.display = 'block';
 
-    const percentage = Math.round((score / questions.length) * 100);
+    const percentage = questions.length > 0
+      ? Math.round((score / questions.length) * 100)
+      : 0;
+
     resultsScore.textContent = `${score} / ${questions.length}`;
 
     if (percentage >= 90) {

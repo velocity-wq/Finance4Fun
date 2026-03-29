@@ -1,5 +1,6 @@
 // ============================================
 // FINANCE4FUN — Glossary Search & Filter Engine
+// Hardened: safe DOM rendering, sanitized search
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,6 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const glossaryCount = document.getElementById('glossary-count');
 
   let activeLetter = null;
+
+  // --- Safety check ---
+  if (!searchInput || !glossaryList || !glossaryEmpty) {
+    console.error('Glossary: Required page elements not found.');
+    return;
+  }
 
   // --- Populate filter dropdowns ---
   Object.entries(CATEGORIES).forEach(([key, cat]) => {
@@ -31,7 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Build letter navigation ---
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  const usedLetters = new Set(FINANCE_TERMS.map(t => t.term[0].toUpperCase()));
+  const usedLetters = new Set(
+    FINANCE_TERMS
+      .filter(t => t.term && t.term.length > 0)
+      .map(t => t.term[0].toUpperCase())
+  );
 
   alphabet.forEach(letter => {
     const btn = document.createElement('button');
@@ -47,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
           activeLetter = null;
           btn.classList.remove('active');
         } else {
-          // Remove active from all
           letterNav.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
           activeLetter = letter;
           btn.classList.add('active');
@@ -59,6 +69,73 @@ document.addEventListener('DOMContentLoaded', () => {
     letterNav.appendChild(btn);
   });
 
+  // --- Safe text node helper (prevents XSS — never inserts raw HTML) ---
+  function createTextEl(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    el.textContent = text;
+    return el;
+  }
+
+  // --- Build a glossary item safely using DOM methods ---
+  function buildGlossaryItem(term, cat, levelClass, levelName) {
+    const item = document.createElement('div');
+    item.className = 'glossary-item';
+
+    // Header button
+    const header = document.createElement('button');
+    header.className = 'glossary-item-header';
+    header.setAttribute('aria-expanded', 'false');
+
+    const termName = createTextEl('span', 'glossary-term-name', term.term);
+
+    const tags = document.createElement('div');
+    tags.className = 'glossary-item-tags';
+
+    const catTag = createTextEl('span', 'tag cat', cat ? cat.name : term.category);
+    const levelTag = createTextEl('span', `tag ${levelClass}`, levelName);
+    const expandIcon = createTextEl('span', 'glossary-expand-icon', '▼');
+
+    tags.appendChild(catTag);
+    tags.appendChild(levelTag);
+    tags.appendChild(expandIcon);
+
+    header.appendChild(termName);
+    header.appendChild(tags);
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'glossary-item-body';
+
+    const content = document.createElement('div');
+    content.className = 'glossary-item-content';
+
+    const defText = createTextEl('p', 'definition-text', term.definition);
+
+    const exampleDiv = document.createElement('div');
+    exampleDiv.className = 'example-text';
+    const exampleLabel = document.createElement('strong');
+    exampleLabel.textContent = 'Example: ';
+    exampleDiv.appendChild(exampleLabel);
+    exampleDiv.appendChild(document.createTextNode(term.example));
+
+    content.appendChild(defText);
+    content.appendChild(exampleDiv);
+    body.appendChild(content);
+
+    item.appendChild(header);
+    item.appendChild(body);
+
+    // Toggle expand
+    header.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      item.classList.toggle('open');
+      header.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    return item;
+  }
+
   // --- Render glossary ---
   function renderGlossary() {
     const searchTerm = searchInput.value.toLowerCase().trim();
@@ -67,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Filter terms
     let filtered = FINANCE_TERMS.filter(term => {
+      if (!term.term || !term.definition) return false;
       const searchMatch = !searchTerm || 
         term.term.toLowerCase().includes(searchTerm) || 
         term.definition.toLowerCase().includes(searchTerm);
@@ -87,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
       grouped[letter].push(term);
     });
 
-    // Render
+    // Clear previous render
     glossaryList.innerHTML = '';
 
     if (filtered.length === 0) {
@@ -106,46 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
       section.className = 'glossary-section';
       section.id = `letter-${letter}`;
 
-      const heading = document.createElement('div');
-      heading.className = 'glossary-letter-heading';
-      heading.textContent = letter;
+      const heading = createTextEl('div', 'glossary-letter-heading', letter);
       section.appendChild(heading);
 
       grouped[letter].forEach(term => {
-        const item = document.createElement('div');
-        item.className = 'glossary-item';
-
         const cat = CATEGORIES[term.category];
         const levelClass = `level-${term.level}`;
         const levelName = LEVELS[term.level]?.name || term.level;
-
-        item.innerHTML = `
-          <button class="glossary-item-header" aria-expanded="false">
-            <span class="glossary-term-name">${highlightMatch(term.term, searchTerm)}</span>
-            <div class="glossary-item-tags">
-              <span class="tag cat">${cat ? cat.name : term.category}</span>
-              <span class="tag ${levelClass}">${levelName}</span>
-              <span class="glossary-expand-icon">▼</span>
-            </div>
-          </button>
-          <div class="glossary-item-body">
-            <div class="glossary-item-content">
-              <p class="definition-text">${highlightMatch(term.definition, searchTerm)}</p>
-              <div class="example-text">
-                <strong>Example: </strong>${term.example}
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Toggle expand
-        const header = item.querySelector('.glossary-item-header');
-        header.addEventListener('click', () => {
-          const isOpen = item.classList.contains('open');
-          item.classList.toggle('open');
-          header.setAttribute('aria-expanded', !isOpen);
-        });
-
+        const item = buildGlossaryItem(term, cat, levelClass, levelName);
         section.appendChild(item);
       });
 
@@ -153,19 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Highlight search matches ---
-  function highlightMatch(text, query) {
-    if (!query) return text;
-    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-    return text.replace(regex, '<mark style="background: var(--color-warm-light); color: inherit; padding: 1px 2px; border-radius: 2px;">$1</mark>');
-  }
+  // --- Debounce search input for performance ---
+  let searchTimeout = null;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(renderGlossary, 150);
+  });
 
-  function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  // --- Event listeners ---
-  searchInput.addEventListener('input', renderGlossary);
   categoryFilter.addEventListener('change', renderGlossary);
   levelFilter.addEventListener('change', renderGlossary);
 

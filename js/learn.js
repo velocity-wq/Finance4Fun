@@ -1,5 +1,6 @@
 // ============================================
 // FINANCE4FUN — Flashcard Learning Engine
+// Hardened: input safety, keyboard edge cases
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,6 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressText = document.getElementById('progress-text');
   const flashcardArea = document.getElementById('flashcard-area');
   const emptyState = document.getElementById('empty-state');
+
+  // --- Safety check ---
+  if (!flashcard || !flashcardArea || !emptyState) {
+    console.error('Learn: Required page elements not found.');
+    return;
+  }
 
   let currentDeck = [];
   let currentIndex = 0;
@@ -132,7 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Keyboard navigation ---
+  // Only respond when not focused on interactive elements (dropdowns, buttons)
   document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement?.tagName?.toLowerCase();
+    if (tag === 'select' || tag === 'input' || tag === 'textarea') return;
+
     if (e.key === 'ArrowLeft') {
       prevBtn.click();
     } else if (e.key === 'ArrowRight') {
