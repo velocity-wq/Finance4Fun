@@ -1601,3 +1601,82 @@ p {
     width: 100%;
   }
 }
+
+/* ============================================
+   INFO PAGES — About, Contact, Privacy
+   ============================================ */
+
+.info-page-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.info-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  transition: border-color var(--transition-fast);
+}
+
+.info-card:hover {
+  border-color: var(--color-border);
+}
+
+.info-card-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-md);
+}
+
+.info-card h2 {
+  margin-bottom: var(--space-md);
+  font-size: 1.5rem;
+}
+
+.info-card p {
+  margin-bottom: var(--space-md);
+  line-height: 1.8;
+}
+
+.info-card p:last-child {
+  margin-bottom: 0;
+}
+
+.info-card a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.info-card a:hover {
+  color: var(--color-primary-hover);
+}
+
+.info-list {
+  margin: var(--space-md) 0;
+  padding-left: var(--space-md);
+}
+
+.info-list li {
+  position: relative;
+  padding: var(--space-sm) 0;
+  padding-left: var(--space-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.info-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  border-radius: 50%;
+}
+
+.info-list li strong {
+  color: var(--color-text);
+}

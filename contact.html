@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Browse and search the complete Finance4Fun glossary. Look up finance terms from Private Equity, Investment Banking, Venture Capital, and more.">
-  <title>Glossary — Finance4Fun</title>
+  <meta name="description" content="Get in touch with the Finance4Fun team. Contact information coming soon.">
+  <title>Contact — Finance4Fun</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -33,53 +33,35 @@
 
   <main class="page-content">
     <div class="container">
-      <!-- Page Header -->
       <div class="page-header">
-        <p class="section-label">Glossary</p>
-        <h1>Finance Dictionary</h1>
-        <p>Search and browse all finance terms. Click any term to expand its definition.</p>
+        <p class="section-label">Contact</p>
+        <h1>We'll Be in Touch Shortly</h1>
+        <p>We're setting things up behind the scenes and can't wait to connect with you.</p>
       </div>
 
-      <!-- Search & Filters -->
-      <div class="glossary-controls">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="glossary-search" placeholder="Search terms..." autocomplete="off">
+      <div class="info-page-content" style="max-width: 640px; margin: 0 auto;">
+        <div class="info-card" style="text-align: center;">
+          <div class="info-card-icon">👋</div>
+          <h2>Thanks for Your Interest</h2>
+          <p>We're currently getting our contact channels set up. Official contact information — including email, social media, and a contact form — will be available here soon.</p>
+          <p>In the meantime, we appreciate your patience and are excited that you're interested in Finance4Fun. We're working hard to build something great, and hearing from people like you makes it even better.</p>
+          <p style="margin-top: var(--space-xl); color: var(--color-text-muted); font-size: 0.9rem;">Check back soon — this page will be updated with full contact details.</p>
         </div>
-        <div class="filter-group">
-          <select class="filter-select" id="glossary-category">
-            <option value="all">All Categories</option>
-          </select>
+
+        <div class="info-card" style="text-align: center;">
+          <div class="info-card-icon">🚀</div>
+          <h2>While You Wait</h2>
+          <p>Jump into learning! Our flashcards and glossary are completely free to use right now.</p>
+          <div style="display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; margin-top: var(--space-xl);">
+            <a href="learn.html" class="btn btn-primary">Start Learning</a>
+            <a href="glossary.html" class="btn btn-secondary">Browse Glossary</a>
+          </div>
         </div>
-        <div class="filter-group">
-          <select class="filter-select" id="glossary-level">
-            <option value="all">All Levels</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Letter Navigation -->
-      <div class="letter-nav" id="letter-nav">
-        <!-- Populated by JS -->
-      </div>
-
-      <!-- Glossary Results Count -->
-      <div class="glossary-count" id="glossary-count"></div>
-
-      <!-- Glossary List -->
-      <div id="glossary-list">
-        <!-- Populated by JS -->
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" id="glossary-empty" style="display: none;">
-        <div class="empty-icon">🔍</div>
-        <h3>No terms found</h3>
-        <p>Try adjusting your search or filters.</p>
       </div>
     </div>
   </main>
 
+  <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
@@ -106,9 +88,7 @@
     </div>
   </footer>
 
-  <script src="js/data.js"></script>
   <script src="js/common.js"></script>
-  <script src="js/glossary.js"></script>
 
 </body>
 </html>
