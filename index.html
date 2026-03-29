@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Finance4Fun — Learn finance terms, concepts, and strategies across Private Equity, Investment Banking, Venture Capital, and more. Master finance the fun way.">
+  <title>Finance4Fun — Master Finance the Fun Way</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="main-nav">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-icon">F4</div>
+        <div class="nav-brand-text">Finance<span>4Fun</span></div>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="learn.html" class="nav-link">Learn</a>
+        <a href="quiz.html" class="nav-link">Quiz <span class="lock-icon">🔒</span></a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <main class="page-content">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <p class="section-label">Welcome to Finance4Fun</p>
+          <h1>Master <span class="highlight">Finance</span> the Fun Way</h1>
+          <p>From Wall Street terminology to personal budgeting — learn the language of finance through interactive flashcards, quizzes, and a comprehensive glossary.</p>
+          <div class="hero-buttons">
+            <a href="learn.html" class="btn btn-primary btn-lg">Start Learning →</a>
+            <a href="glossary.html" class="btn btn-secondary btn-lg">Browse Glossary</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="number">7</span>
+              <span class="label">Categories</span>
+            </div>
+            <div class="hero-stat">
+              <span class="number">3</span>
+              <span class="label">Difficulty Levels</span>
+            </div>
+            <div class="hero-stat">
+              <span class="number" id="term-count">20</span>
+              <span class="label">Finance Terms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label">How It Works</p>
+          <h2>Three Ways to Learn</h2>
+          <p>Choose how you want to build your financial vocabulary — at your own pace.</p>
+        </div>
+        <div class="features-grid">
+          <div class="card animate-in">
+            <div class="card-icon blue">📚</div>
+            <h3>Flashcards</h3>
+            <p>Flip through curated finance flashcards organized by topic and difficulty. Test your memory and learn at your own pace.</p>
+            <a href="learn.html" class="btn btn-ghost" style="margin-top: var(--space-md);">Start Learning →</a>
+          </div>
+          <div class="card animate-in">
+            <div class="card-icon terracotta">🧠</div>
+            <h3>Quizzes</h3>
+            <p>Put your knowledge to the test with multiple-choice quizzes. Track your scores and see how you improve over time.</p>
+            <a href="quiz.html" class="btn btn-ghost" style="margin-top: var(--space-md);">Take a Quiz →</a>
+          </div>
+          <div class="card animate-in">
+            <div class="card-icon warm">📖</div>
+            <h3>Glossary</h3>
+            <p>Search and browse our comprehensive glossary of finance terms. Quickly look up any concept with real-world examples.</p>
+            <a href="glossary.html" class="btn btn-ghost" style="margin-top: var(--space-md);">Open Glossary →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="section" style="background: var(--color-bg-alt);">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label">Topics Covered</p>
+          <h2>Explore Finance Fields</h2>
+          <p>From high finance to everyday money management — we've got you covered.</p>
+        </div>
+        <div class="categories-grid" id="categories-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Levels Section -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label">For Every Level</p>
+          <h2>Learn at Your Pace</h2>
+          <p>Whether you're just starting out or diving deep into advanced concepts.</p>
+        </div>
+        <div class="levels-grid">
+          <div class="card animate-in" style="text-align: center;">
+            <span class="level-badge beginner">🌱 Beginner</span>
+            <h3>Foundations</h3>
+            <p>Core concepts every person should know — stocks, bonds, interest, inflation, and the basics of how money works.</p>
+          </div>
+          <div class="card animate-in" style="text-align: center;">
+            <span class="level-badge intermediate">📘 Intermediate</span>
+            <h3>Building Knowledge</h3>
+            <p>Deeper concepts used in professional finance — LBOs, IPOs, term sheets, valuation ratios, and market indicators.</p>
+          </div>
+          <div class="card animate-in" style="text-align: center;">
+            <span class="level-badge advanced">🎓 Advanced</span>
+            <h3>Expert Level</h3>
+            <p>Specialized terms from PE, IB, and VC — carried interest, DCF analysis, cap tables, and more.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section" style="background: var(--color-bg-alt);">
+      <div class="container">
+        <div class="hero-content" style="padding: var(--space-2xl) 0;">
+          <h2>Ready to Speak the Language of Finance?</h2>
+          <p style="max-width: 480px; margin: var(--space-md) auto var(--space-xl);">Jump in and start learning. No sign-up required for flashcards and the glossary.</p>
+          <div class="hero-buttons">
+            <a href="learn.html" class="btn btn-accent btn-lg">Start with Flashcards</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand-text">Finance<span>4Fun</span></div>
+          <p>Making finance education accessible, engaging, and — dare we say — fun.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <a href="learn.html">Flashcards</a>
+          <a href="quiz.html">Quizzes</a>
+          <a href="glossary.html">Glossary</a>
+        </div>
+        <div class="footer-col">
+          <h4>Topics</h4>
+          <a href="learn.html">Private Equity</a>
+          <a href="learn.html">Investment Banking</a>
+          <a href="learn.html">Venture Capital</a>
+          <a href="learn.html">Investing</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Finance4Fun. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    // Populate categories grid from data
+    const grid = document.getElementById('categories-grid');
+    if (grid) {
+      Object.entries(CATEGORIES).forEach(([key, cat]) => {
+        const count = FINANCE_TERMS.filter(t => t.category === key).length;
+        const card = document.createElement('a');
+        card.href = `learn.html?category=${key}`;
+        card.className = 'category-card animate-in';
+        card.innerHTML = `
+          <div class="cat-emoji">${cat.emoji}</div>
+          <div class="cat-info">
+            <h4>${cat.name}</h4>
+            <p>${count} term${count !== 1 ? 's' : ''}</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Update term count
+    const countEl = document.getElementById('term-count');
+    if (countEl) countEl.textContent = FINANCE_TERMS.length;
+  </script>
+
+</body>
+</html>

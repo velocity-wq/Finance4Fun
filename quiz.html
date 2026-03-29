@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Test your finance knowledge with multiple-choice quizzes. Members-only feature covering PE, IB, VC, Investing, Economics, and more.">
+  <title>Quiz — Finance4Fun</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="main-nav">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-icon">F4</div>
+        <div class="nav-brand-text">Finance<span>4Fun</span></div>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="learn.html" class="nav-link">Learn</a>
+        <a href="quiz.html" class="nav-link">Quiz <span class="lock-icon">🔒</span></a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <p class="section-label">Quiz</p>
+        <h1>Test Your Knowledge</h1>
+        <p>Multiple-choice quizzes to see how well you've learned your finance terms.</p>
+      </div>
+
+      <!-- Quiz Setup (initial view) -->
+      <div class="quiz-setup" id="quiz-setup">
+        <div class="card">
+          <h3>Configure Your Quiz</h3>
+          <div class="quiz-form-group">
+            <label for="quiz-category">Category</label>
+            <select class="filter-select" id="quiz-category">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+          <div class="quiz-form-group">
+            <label for="quiz-level">Difficulty</label>
+            <select class="filter-select" id="quiz-level">
+              <option value="all">All Levels</option>
+            </select>
+          </div>
+          <div class="quiz-form-group">
+            <label for="quiz-count">Number of Questions</label>
+            <select class="filter-select" id="quiz-count">
+              <option value="5">5 Questions</option>
+              <option value="10" selected>10 Questions</option>
+              <option value="15">15 Questions</option>
+              <option value="20">20 Questions</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-lg" id="start-quiz-btn" style="width: 100%; margin-top: var(--space-md);">
+            Start Quiz →
+          </button>
+        </div>
+      </div>
+
+      <!-- Quiz Active Area (hidden initially) -->
+      <div class="quiz-area" id="quiz-area" style="display: none;">
+        <div class="quiz-header">
+          <span class="quiz-progress" id="quiz-progress">Question 1 of 10</span>
+          <span class="quiz-score" id="quiz-score">Score: 0</span>
+        </div>
+        <div class="progress-bar-wrapper" style="margin-bottom: var(--space-xl);">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="quiz-progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="quiz-question-card" id="quiz-card">
+          <h3 id="quiz-q-num">Question 1</h3>
+          <p class="question-text" id="quiz-question-text">What is the definition of...</p>
+          <div class="quiz-options" id="quiz-options">
+            <!-- Options populated by JS -->
+          </div>
+          <div class="quiz-next-btn" id="quiz-next-wrapper" style="display: none;">
+            <button class="btn btn-primary" id="quiz-next-btn">Next Question →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Results (hidden initially) -->
+      <div class="quiz-results" id="quiz-results" style="display: none;">
+        <div class="card">
+          <div class="results-icon" id="results-icon">🏆</div>
+          <h2>Quiz Complete!</h2>
+          <div class="results-score" id="results-score">8 / 10</div>
+          <p class="results-message" id="results-message">Great job! You've got a solid understanding.</p>
+          <div class="results-actions">
+            <button class="btn btn-primary" id="retry-quiz-btn">Try Again</button>
+            <a href="learn.html" class="btn btn-secondary">Review Flashcards</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Paywall Overlay -->
+  <div class="paywall-overlay" id="paywall-overlay">
+    <div class="paywall-modal">
+      <div class="lock-big">🔒</div>
+      <h2>Members Only</h2>
+      <p>Quizzes are available exclusively for Finance4Fun members. Unlock full access to test your knowledge.</p>
+      <ul class="paywall-features">
+        <li><span class="check">✓</span> Unlimited quizzes across all categories</li>
+        <li><span class="check">✓</span> Score tracking and progress history</li>
+        <li><span class="check">✓</span> New terms and quizzes added regularly</li>
+        <li><span class="check">✓</span> Support the creation of free learning content</li>
+      </ul>
+      <button class="btn btn-accent btn-lg" style="width: 100%; margin-bottom: var(--space-md);" id="join-btn">
+        Join Finance4Fun — Coming Soon
+      </button>
+      <button class="btn btn-ghost" id="preview-btn">Preview a free quiz →</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Finance4Fun. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/quiz.js"></script>
+
+</body>
+</html>

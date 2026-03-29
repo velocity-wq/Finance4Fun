@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse and search the complete Finance4Fun glossary. Look up finance terms from Private Equity, Investment Banking, Venture Capital, and more.">
+  <title>Glossary — Finance4Fun</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="main-nav">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-icon">F4</div>
+        <div class="nav-brand-text">Finance<span>4Fun</span></div>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="learn.html" class="nav-link">Learn</a>
+        <a href="quiz.html" class="nav-link">Quiz <span class="lock-icon">🔒</span></a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <p class="section-label">Glossary</p>
+        <h1>Finance Dictionary</h1>
+        <p>Search and browse all finance terms. Click any term to expand its definition.</p>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="glossary-controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="glossary-search" placeholder="Search terms..." autocomplete="off">
+        </div>
+        <div class="filter-group">
+          <select class="filter-select" id="glossary-category">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <select class="filter-select" id="glossary-level">
+            <option value="all">All Levels</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Letter Navigation -->
+      <div class="letter-nav" id="letter-nav">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Glossary Results Count -->
+      <div class="glossary-count" id="glossary-count"></div>
+
+      <!-- Glossary List -->
+      <div id="glossary-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="glossary-empty" style="display: none;">
+        <div class="empty-icon">🔍</div>
+        <h3>No terms found</h3>
+        <p>Try adjusting your search or filters.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Finance4Fun. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/glossary.js"></script>
+
+</body>
+</html>

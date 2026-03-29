@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn finance terms with interactive flashcards. Study Private Equity, Investment Banking, Venture Capital, and more at your own pace.">
+  <title>Learn — Finance4Fun</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="main-nav">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-icon">F4</div>
+        <div class="nav-brand-text">Finance<span>4Fun</span></div>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="learn.html" class="nav-link">Learn</a>
+        <a href="quiz.html" class="nav-link">Quiz <span class="lock-icon">🔒</span></a>
+        <a href="glossary.html" class="nav-link">Glossary</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <p class="section-label">Learn</p>
+        <h1>Flashcards</h1>
+        <p>Click a card to flip it. Master one term at a time.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar" id="filters-bar">
+        <div class="filter-group">
+          <label for="category-filter">Category</label>
+          <select class="filter-select" id="category-filter">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="level-filter">Level</label>
+          <select class="filter-select" id="level-filter">
+            <option value="all">All Levels</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-secondary btn-sm" id="shuffle-btn">🔀 Shuffle</button>
+        </div>
+      </div>
+
+      <!-- Flashcard Area -->
+      <div class="flashcard-area" id="flashcard-area">
+        <!-- Progress -->
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="progress-text" id="progress-text">Card 1 of 20</div>
+        </div>
+
+        <!-- The Flashcard -->
+        <div class="flashcard-container" id="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="flashcard-face flashcard-front">
+              <span class="card-label" id="card-category">INVESTING</span>
+              <h2 id="card-term">Stock</h2>
+              <span class="tap-hint">Click to reveal definition</span>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <span class="back-label">Definition</span>
+              <p class="definition" id="card-definition"></p>
+              <div class="example" id="card-example">
+                <strong>Example</strong>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flashcard-nav">
+          <button class="btn btn-secondary" id="prev-btn">← Previous</button>
+          <div class="card-counter">
+            <span id="current-num">1</span> <span>/ <span id="total-num">20</span></span>
+          </div>
+          <button class="btn btn-primary" id="next-btn">Next →</button>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-icon">🔍</div>
+        <h3>No terms found</h3>
+        <p>Try adjusting your filters to see more flashcards.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Finance4Fun. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/learn.js"></script>
+
+</body>
+</html>
