@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'">
+  <!-- CSP disabled for local/static development — re-enable via HTTP headers on production -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Finance4Fun Privacy Policy. How we handle your data and protect your privacy.">
   <title>Privacy Policy — Finance4Fun</title>
@@ -60,7 +60,12 @@
 
         <div class="info-card">
           <h2>How Your Data Is Stored</h2>
-          <p>Since we don't collect any personal data, there is nothing to store. Any quiz scores, flashcard progress, or preferences exist only in your browser's memory during your visit and are not saved or transmitted anywhere.</p>
+          <p>We do not collect or store any personal data on our servers. The site uses your browser's <strong>localStorage</strong> for a small number of functional preferences (such as tracking whether you've used your free quiz preview). This data:</p>
+          <ul class="info-list">
+            <li>Stays entirely on <strong>your device</strong> — it is never transmitted to us or any third party.</li>
+            <li>Can be cleared at any time by clearing your browser data or using our built-in reset feature.</li>
+            <li>Contains <strong>no personal information</strong> — only simple flags like "free quiz used."</li>
+          </ul>
         </div>
 
         <div class="info-card">

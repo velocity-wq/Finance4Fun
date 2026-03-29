@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'">
+  <!-- CSP disabled for local development — re-enable with a real domain -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Test your finance knowledge with multiple-choice quizzes. Members-only feature covering PE, IB, VC, Investing, Economics, and more.">
   <title>Quiz — Finance4Fun</title>
@@ -40,23 +40,29 @@
         <p>Multiple-choice quizzes to see how well you've learned your finance terms.</p>
       </div>
 
-      <!-- Quiz Setup (initial view) -->
+      <!-- Quiz Setup -->
       <div class="quiz-setup" id="quiz-setup">
         <div class="card">
-          <h3>Configure Your Quiz</h3>
+          <div class="quiz-setup-header">
+            <h3 id="quiz-setup-title">Configure Your Quiz</h3>
+            <div class="free-quiz-badge" id="free-quiz-badge" style="display: none;">
+              🎁 Free Preview
+            </div>
+          </div>
           <div class="quiz-form-group">
             <label for="quiz-category">Category</label>
             <select class="filter-select" id="quiz-category">
               <option value="all">All Categories</option>
             </select>
           </div>
-          <div class="quiz-form-group">
+          <div class="quiz-form-group" id="quiz-level-group">
             <label for="quiz-level">Difficulty</label>
             <select class="filter-select" id="quiz-level">
               <option value="all">All Levels</option>
             </select>
+            <span class="locked-label">🔒 Beginner only for free preview</span>
           </div>
-          <div class="quiz-form-group">
+          <div class="quiz-form-group" id="quiz-count-group">
             <label for="quiz-count">Number of Questions</label>
             <select class="filter-select" id="quiz-count">
               <option value="5">5 Questions</option>
@@ -64,6 +70,7 @@
               <option value="15">15 Questions</option>
               <option value="20">20 Questions</option>
             </select>
+            <span class="locked-label">🔒 5 questions for free preview</span>
           </div>
           <button class="btn btn-primary btn-lg" id="start-quiz-btn" style="width: 100%; margin-top: var(--space-md);">
             Start Quiz →
@@ -71,10 +78,10 @@
         </div>
       </div>
 
-      <!-- Quiz Active Area (hidden initially) -->
+      <!-- Quiz Active Area -->
       <div class="quiz-area" id="quiz-area" style="display: none;">
         <div class="quiz-header">
-          <span class="quiz-progress" id="quiz-progress">Question 1 of 10</span>
+          <span class="quiz-progress" id="quiz-progress">Question 1 of 5</span>
           <span class="quiz-score" id="quiz-score">Score: 0</span>
         </div>
         <div class="progress-bar-wrapper" style="margin-bottom: var(--space-xl);">
@@ -94,12 +101,12 @@
         </div>
       </div>
 
-      <!-- Quiz Results (hidden initially) -->
+      <!-- Quiz Results -->
       <div class="quiz-results" id="quiz-results" style="display: none;">
         <div class="card">
           <div class="results-icon" id="results-icon">🏆</div>
           <h2>Quiz Complete!</h2>
-          <div class="results-score" id="results-score">8 / 10</div>
+          <div class="results-score" id="results-score">4 / 5</div>
           <p class="results-message" id="results-message">Great job! You've got a solid understanding.</p>
           <div class="results-actions">
             <button class="btn btn-primary" id="retry-quiz-btn">Try Again</button>
@@ -110,22 +117,47 @@
     </div>
   </main>
 
-  <!-- Paywall Overlay -->
-  <div class="paywall-overlay" id="paywall-overlay">
+  <!-- Initial Paywall Overlay (first visit — has free quiz option) -->
+  <div class="paywall-overlay" id="paywall-overlay" style="display: none;">
     <div class="paywall-modal">
       <div class="lock-big">🔒</div>
       <h2>Members Only</h2>
       <p>Quizzes are available exclusively for Finance4Fun members. Unlock full access to test your knowledge.</p>
       <ul class="paywall-features">
         <li><span class="check">✓</span> Unlimited quizzes across all categories</li>
-        <li><span class="check">✓</span> Score tracking and progress history</li>
-        <li><span class="check">✓</span> New terms and quizzes added regularly</li>
+        <li><span class="check">✓</span> All difficulty levels unlocked</li>
+        <li><span class="check">✓</span> Up to 20 questions per quiz</li>
         <li><span class="check">✓</span> Support the creation of free learning content</li>
       </ul>
       <button class="btn btn-accent btn-lg" style="width: 100%; margin-bottom: var(--space-md);" id="join-btn">
         Join Finance4Fun — Coming Soon
       </button>
-      <button class="btn btn-ghost" id="preview-btn">Preview a free quiz →</button>
+      <button class="btn btn-ghost" id="preview-btn">Try a free quiz first →</button>
+    </div>
+  </div>
+
+  <!-- Membership Required Overlay (after free quiz used — no dismiss) -->
+  <div class="paywall-overlay" id="membership-overlay" style="display: none;">
+    <div class="paywall-modal">
+      <div class="lock-big">🔐</div>
+      <h2>Membership Required</h2>
+      <p>You've used your free quiz preview. To take more quizzes, join Finance4Fun to unlock unlimited access.</p>
+      <ul class="paywall-features">
+        <li><span class="check">✓</span> Unlimited quizzes across all categories</li>
+        <li><span class="check">✓</span> All difficulty levels unlocked</li>
+        <li><span class="check">✓</span> Up to 20 questions per quiz</li>
+        <li><span class="check">✓</span> Score tracking and progress history</li>
+      </ul>
+      <button class="btn btn-accent btn-lg" style="width: 100%; margin-bottom: var(--space-md);" id="membership-join-btn">
+        Join Finance4Fun — Coming Soon
+      </button>
+      <div class="membership-alt-actions">
+        <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: var(--space-md);">Or keep learning for free:</p>
+        <div style="display: flex; gap: var(--space-sm); justify-content: center;">
+          <button class="btn btn-secondary" id="membership-learn-btn">📚 Flashcards</button>
+          <button class="btn btn-secondary" id="membership-glossary-btn">📖 Glossary</button>
+        </div>
+      </div>
     </div>
   </div>
 

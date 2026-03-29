@@ -1,19 +1,39 @@
 // ============================================
 // FINANCE4FUN — Quiz Engine
-// Hardened: safe DOM rendering, edge case handling
+// Free quiz system with membership gating
 // ============================================
+
+// --- Reset mechanism ---
+// To re-enable the free quiz, add ?reset to the URL:
+//   quiz.html?reset
+// This works reliably in any browser, no console needed.
+(function() {
+  if (window.location.search.includes('reset')) {
+    localStorage.removeItem('f4f_free_quiz_used');
+    // Clean the URL so it doesn't keep resetting
+    window.location.replace(window.location.pathname);
+  }
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   // --- Elements ---
   const paywallOverlay = document.getElementById('paywall-overlay');
   const previewBtn = document.getElementById('preview-btn');
   const joinBtn = document.getElementById('join-btn');
+  const membershipOverlay = document.getElementById('membership-overlay');
+  const membershipJoinBtn = document.getElementById('membership-join-btn');
+  const membershipLearnBtn = document.getElementById('membership-learn-btn');
+  const membershipGlossaryBtn = document.getElementById('membership-glossary-btn');
   const quizSetup = document.getElementById('quiz-setup');
+  const quizSetupTitle = document.getElementById('quiz-setup-title');
   const quizArea = document.getElementById('quiz-area');
   const quizResults = document.getElementById('quiz-results');
   const quizCategorySelect = document.getElementById('quiz-category');
   const quizLevelSelect = document.getElementById('quiz-level');
   const quizCountSelect = document.getElementById('quiz-count');
+  const quizLevelGroup = document.getElementById('quiz-level-group');
+  const quizCountGroup = document.getElementById('quiz-count-group');
+  const freeQuizBadge = document.getElementById('free-quiz-badge');
   const startQuizBtn = document.getElementById('start-quiz-btn');
   const quizProgress = document.getElementById('quiz-progress');
   const quizScoreEl = document.getElementById('quiz-score');
@@ -32,12 +52,31 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentQuestion = 0;
   let score = 0;
   let answered = false;
+  let isFreeQuizMode = false;
 
-  // --- Safety check: make sure all elements exist ---
+  // --- Safety check ---
   if (!quizSetup || !quizArea || !quizOptions) {
     console.error('Quiz: Required page elements not found.');
     return;
   }
+
+  // =============================================
+  // FREE QUIZ TRACKING
+  // Uses localStorage so it persists across sessions.
+  // Reset anytime by running: resetFreeQuiz() in the browser console
+  // =============================================
+  const FREE_QUIZ_KEY = 'f4f_free_quiz_used';
+
+  function hasFreeQuizBeenUsed() {
+    return localStorage.getItem(FREE_QUIZ_KEY) === 'true';
+  }
+
+  function markFreeQuizUsed() {
+    localStorage.setItem(FREE_QUIZ_KEY, 'true');
+  }
+
+  // Reset function is defined globally above the DOMContentLoaded block
+  // so it is always accessible from the browser console.
 
   // --- Populate filter dropdowns ---
   Object.entries(CATEGORIES).forEach(([key, cat]) => {
@@ -54,15 +93,74 @@ document.addEventListener('DOMContentLoaded', () => {
     quizLevelSelect.appendChild(opt);
   });
 
-  // --- Paywall ---
+  // =============================================
+  // PAGE LOAD LOGIC
+  // =============================================
+  function initQuizPage() {
+    if (hasFreeQuizBeenUsed()) {
+      // Free quiz already used — show the members-only overlay (can't be dismissed)
+      paywallOverlay.style.display = 'none';
+      quizSetup.style.display = 'none';
+      quizArea.style.display = 'none';
+      quizResults.style.display = 'none';
+      membershipOverlay.style.display = 'flex';
+    } else {
+      // First visit — show the initial paywall with free quiz option
+      paywallOverlay.style.display = 'flex';
+      membershipOverlay.style.display = 'none';
+    }
+  }
+
+  // --- Initial paywall: "Preview a free quiz" ---
   previewBtn.addEventListener('click', () => {
     paywallOverlay.style.display = 'none';
+    enterFreeQuizMode();
   });
 
   joinBtn.addEventListener('click', () => {
     alert('Membership coming soon! For now, enjoy a free preview.');
     paywallOverlay.style.display = 'none';
+    enterFreeQuizMode();
   });
+
+  // --- Membership overlay actions (can't be dismissed — only navigate away) ---
+  membershipJoinBtn.addEventListener('click', () => {
+    alert('Membership coming soon! Check back for updates.');
+  });
+
+  membershipLearnBtn.addEventListener('click', () => {
+    window.location.href = 'learn.html';
+  });
+
+  membershipGlossaryBtn.addEventListener('click', () => {
+    window.location.href = 'glossary.html';
+  });
+
+  // =============================================
+  // FREE QUIZ MODE
+  // =============================================
+  function enterFreeQuizMode() {
+    isFreeQuizMode = true;
+
+    // Lock difficulty to Beginner
+    quizLevelSelect.value = 'beginner';
+    quizLevelSelect.disabled = true;
+    quizLevelGroup.classList.add('locked');
+
+    // Lock count to 5
+    quizCountSelect.value = '5';
+    quizCountSelect.disabled = true;
+    quizCountGroup.classList.add('locked');
+
+    // Show the free quiz badge
+    if (freeQuizBadge) freeQuizBadge.style.display = 'block';
+
+    // Update the title
+    if (quizSetupTitle) quizSetupTitle.textContent = 'Free Quiz Preview';
+
+    // Show the setup form
+    quizSetup.style.display = 'block';
+  }
 
   // --- Generate quiz questions ---
   function generateQuestions() {
@@ -70,33 +168,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const level = quizLevelSelect.value;
     const count = parseInt(quizCountSelect.value, 10);
 
-    // Filter available terms
     let available = FINANCE_TERMS.filter(term => {
       const catMatch = category === 'all' || term.category === category;
       const lvlMatch = level === 'all' || term.level === level;
       return catMatch && lvlMatch;
     });
 
-    // Need at least 2 terms to make a quiz (1 correct + at least 1 wrong)
-    if (available.length < 2) {
-      return false;
-    }
+    if (available.length < 2) return false;
 
-    // Shuffle
     available = shuffleArray([...available]);
-
-    // Take up to count
     const selected = available.slice(0, count);
 
-    // Generate questions
     questions = selected.map(term => {
-      // Get wrong answers from OTHER terms (never the same as the correct one)
       const otherTerms = FINANCE_TERMS.filter(t => t.id !== term.id);
-      // Take up to 3 wrong answers (handle case where there are fewer than 3 other terms)
       const numWrong = Math.min(3, otherTerms.length);
       const wrongAnswers = shuffleArray([...otherTerms]).slice(0, numWrong);
 
-      // Build options — truncate ONCE here
       const options = shuffleArray([
         { text: truncateText(term.definition, 120), correct: true },
         ...wrongAnswers.map(t => ({ text: truncateText(t.definition, 120), correct: false }))
@@ -130,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Start Quiz ---
   startQuizBtn.addEventListener('click', () => {
     if (!generateQuestions()) {
-      alert('Not enough terms in that category/level to make a quiz. Try "All Categories" or "All Levels"!');
+      alert('Not enough terms in that category/level to make a quiz. Try "All Categories"!');
       return;
     }
     currentQuestion = 0;
@@ -141,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderQuestion();
   });
 
-  // --- Render current question (safe DOM construction — no innerHTML with user data) ---
+  // --- Render question ---
   function renderQuestion() {
     answered = false;
     const q = questions[currentQuestion];
@@ -155,14 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
     quizProgressFill.style.width = `${((currentQuestion) / questions.length) * 100}%`;
     quizQuestionText.textContent = `What is the definition of "${q.term}"?`;
 
-    // Clear previous options
     quizOptions.innerHTML = '';
 
     q.options.forEach((opt, i) => {
       const btn = document.createElement('button');
       btn.className = 'quiz-option';
 
-      // Build option safely using DOM methods (no innerHTML)
       const letterSpan = document.createElement('span');
       letterSpan.className = 'option-letter';
       letterSpan.textContent = letters[i] || '?';
@@ -179,24 +264,20 @@ document.addEventListener('DOMContentLoaded', () => {
     quizNextWrapper.style.display = 'none';
   }
 
-  // --- Handle answer selection ---
+  // --- Handle answer ---
   function handleAnswer(selectedBtn, isCorrect, selectedIndex) {
     if (answered) return;
     answered = true;
 
     const allBtns = quizOptions.querySelectorAll('.quiz-option');
-
-    // Disable all buttons
     allBtns.forEach(btn => btn.classList.add('disabled'));
 
-    // Mark correct/incorrect
     if (isCorrect) {
       selectedBtn.classList.add('correct');
       score++;
       quizScoreEl.textContent = `Score: ${score}`;
     } else {
       selectedBtn.classList.add('incorrect');
-      // Show the correct one
       const q = questions[currentQuestion];
       q.options.forEach((opt, i) => {
         if (opt.correct && allBtns[i]) {
@@ -205,7 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Show next button
     quizNextWrapper.style.display = 'block';
     if (currentQuestion < questions.length - 1) {
       quizNextBtn.textContent = 'Next Question →';
@@ -248,11 +328,25 @@ document.addEventListener('DOMContentLoaded', () => {
       resultsIcon.textContent = '💪';
       resultsMessage.textContent = "Keep going! Head to the flashcards to study, then try again.";
     }
+
+    // If this was a free quiz, mark it as used
+    if (isFreeQuizMode) {
+      markFreeQuizUsed();
+    }
   }
 
   // --- Retry ---
   retryQuizBtn.addEventListener('click', () => {
-    quizResults.style.display = 'none';
-    quizSetup.style.display = 'block';
+    if (isFreeQuizMode) {
+      // Free quiz is now used — show membership overlay
+      quizResults.style.display = 'none';
+      membershipOverlay.style.display = 'flex';
+    } else {
+      quizResults.style.display = 'none';
+      quizSetup.style.display = 'block';
+    }
   });
+
+  // --- Initialize ---
+  initQuizPage();
 });

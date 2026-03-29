@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'">
+  <!-- CSP disabled for local/static development — re-enable via HTTP headers on production -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Finance4Fun — Learn finance terms, concepts, and strategies across Private Equity, Investment Banking, Venture Capital, and more. Master finance the fun way.">
   <title>Finance4Fun — Master Finance the Fun Way</title>
@@ -177,30 +177,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/common.js"></script>
-  <script>
-    // Populate categories grid from data
-    const grid = document.getElementById('categories-grid');
-    if (grid) {
-      Object.entries(CATEGORIES).forEach(([key, cat]) => {
-        const count = FINANCE_TERMS.filter(t => t.category === key).length;
-        const card = document.createElement('a');
-        card.href = `learn.html?category=${key}`;
-        card.className = 'category-card animate-in';
-        card.innerHTML = `
-          <div class="cat-emoji">${cat.emoji}</div>
-          <div class="cat-info">
-            <h4>${cat.name}</h4>
-            <p>${count} term${count !== 1 ? 's' : ''}</p>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    // Update term count
-    const countEl = document.getElementById('term-count');
-    if (countEl) countEl.textContent = FINANCE_TERMS.length;
-  </script>
+  <script src="js/home.js"></script>
 
 </body>
 </html>
