@@ -16,7 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const emojiDiv = document.createElement('div');
       emojiDiv.className = 'cat-emoji';
-      emojiDiv.textContent = cat.emoji;
+
+      if (cat.image) {
+        const img = document.createElement('img');
+        img.src = cat.image;
+        img.alt = cat.name;
+        img.className = 'cat-icon-img';
+        emojiDiv.appendChild(img);
+      } else {
+        emojiDiv.textContent = cat.emoji;
+      }
 
       const infoDiv = document.createElement('div');
       infoDiv.className = 'cat-info';

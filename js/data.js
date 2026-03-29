@@ -187,13 +187,13 @@ const FINANCE_TERMS = [
 
 // Category display names and icons
 const CATEGORIES = {
-  'pe': { name: 'Private Equity', emoji: '🏛️' },
-  'ib': { name: 'Investment Banking', emoji: '🏦' },
-  'vc': { name: 'Venture Capital', emoji: '🚀' },
-  'pc': { name: 'Private Credit', emoji: '💳' },
-  'investing': { name: 'Investing', emoji: '📈' },
-  'economics': { name: 'Economics', emoji: '🌍' },
-  'personal-finance': { name: 'Personal Finance', emoji: '💰' }
+  'pe': { name: 'Private Equity', emoji: '🏛️', image: 'images/categories/pe.png' },
+  'ib': { name: 'Investment Banking', emoji: '🏦', image: 'images/categories/ib.png' },
+  'vc': { name: 'Venture Capital', emoji: '🚀', image: 'images/categories/vc.png' },
+  'pc': { name: 'Private Credit', emoji: '💳', image: 'images/categories/pc.png' },
+  'investing': { name: 'Investing', emoji: '📈', image: 'images/categories/investing.png' },
+  'economics': { name: 'Economics', emoji: '🌍', image: 'images/categories/economics.png' },
+  'personal-finance': { name: 'Personal Finance', emoji: '💰', image: 'images/categories/personal-finance.png' }
 };
 
 // Level display names

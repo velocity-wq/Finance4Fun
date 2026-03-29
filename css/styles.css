@@ -549,14 +549,23 @@ p {
 
 .category-card .cat-emoji {
   font-size: 1.75rem;
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   background: var(--color-bg-alt);
   border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.cat-icon-img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  mix-blend-mode: multiply;
 }
 
 .category-card .cat-info h4 {
