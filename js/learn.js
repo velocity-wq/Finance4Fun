@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressText = document.getElementById('progress-text');
   const flashcardArea = document.getElementById('flashcard-area');
   const emptyState = document.getElementById('empty-state');
+  const cardImage = document.getElementById('card-image');
+  const cardImageEl = document.getElementById('card-image-el');
 
   // --- Safety check ---
   if (!flashcard || !flashcardArea || !emptyState) {
@@ -93,6 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const cat = CATEGORIES[term.category];
     cardCategory.textContent = cat ? cat.name.toUpperCase() : term.category.toUpperCase();
     cardTerm.textContent = term.term;
+
+    // Update image
+    if (term.image) {
+      cardImageEl.src = term.image;
+      cardImageEl.alt = term.term + ' illustration';
+      cardImage.style.display = 'block';
+    } else {
+      cardImage.style.display = 'none';
+      cardImageEl.src = '';
+      cardImageEl.alt = '';
+    }
 
     // Update back
     cardDefinition.textContent = term.definition;

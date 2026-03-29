@@ -17,7 +17,8 @@ const FINANCE_TERMS = [
     definition: "A stock represents a share of ownership in a publicly traded company. When you buy a stock, you become a partial owner (shareholder) of that company and may benefit from its growth through price appreciation or dividends.",
     example: "If you buy 10 shares of Apple stock, you own a tiny fraction of Apple Inc. and can profit if the share price rises.",
     category: "investing",
-    level: "beginner"
+    level: "beginner",
+    image: "images/flashcards/stock.png"
   },
   {
     id: 2,
@@ -25,7 +26,8 @@ const FINANCE_TERMS = [
     definition: "A bond is a fixed-income debt instrument where an investor lends money to an entity (corporate or governmental) that borrows the funds for a defined period at a fixed or variable interest rate.",
     example: "A U.S. Treasury Bond pays you interest every six months and returns your principal when it matures in 10, 20, or 30 years.",
     category: "investing",
-    level: "beginner"
+    level: "beginner",
+    image: "images/flashcards/bond.png"
   },
   {
     id: 3,
@@ -33,7 +35,8 @@ const FINANCE_TERMS = [
     definition: "Compound interest is interest calculated on both the initial principal and the accumulated interest from previous periods. It causes wealth to grow exponentially over time rather than linearly.",
     example: "If you invest $1,000 at 8% annual compound interest, after 10 years you'd have about $2,159 — not just $1,800 as with simple interest.",
     category: "personal-finance",
-    level: "beginner"
+    level: "beginner",
+    image: "images/flashcards/compound-interest.png"
   },
   {
     id: 4,
@@ -41,7 +44,8 @@ const FINANCE_TERMS = [
     definition: "Inflation is the rate at which the general level of prices for goods and services rises over time, eroding purchasing power. Central banks attempt to manage inflation to maintain economic stability.",
     example: "If inflation is 3% per year, a coffee that costs $5 today would cost about $5.15 next year.",
     category: "economics",
-    level: "beginner"
+    level: "beginner",
+    image: "images/flashcards/inflation.png"
   },
   {
     id: 5,
@@ -65,7 +69,8 @@ const FINANCE_TERMS = [
     definition: "A portfolio is a collection of financial investments such as stocks, bonds, cash, and other assets held by an individual or institution. Diversifying a portfolio helps manage risk.",
     example: "A balanced portfolio might include 60% stocks, 30% bonds, and 10% cash to balance growth potential with stability.",
     category: "investing",
-    level: "beginner"
+    level: "beginner",
+    image: "images/flashcards/portfolio.png"
   },
 
   // ── INTERMEDIATE ──────────────────────────────────
@@ -107,7 +112,8 @@ const FINANCE_TERMS = [
     definition: "The P/E ratio compares a company's current share price to its earnings per share (EPS). A high P/E may indicate that a stock is overvalued or that investors expect high future growth rates.",
     example: "A company trading at $100 per share with $5 in EPS has a P/E ratio of 20, meaning investors pay $20 for every $1 of earnings.",
     category: "investing",
-    level: "intermediate"
+    level: "intermediate",
+    image: "images/flashcards/pe-ratio.png"
   },
   {
     id: 13,
@@ -115,7 +121,8 @@ const FINANCE_TERMS = [
     definition: "The yield curve is a graph plotting the interest rates of bonds with equal credit quality but different maturity dates. An inverted yield curve (short-term rates exceeding long-term rates) is often seen as a predictor of recession.",
     example: "When 2-year Treasury yields exceed 10-year Treasury yields, the yield curve inverts, historically preceding recessions by 12–18 months.",
     category: "economics",
-    level: "intermediate"
+    level: "intermediate",
+    image: "images/flashcards/yield-curve.png"
   },
 
   // ── ADVANCED ──────────────────────────────────────
@@ -173,7 +180,8 @@ const FINANCE_TERMS = [
     definition: "Dollar-cost averaging is an investment strategy where an investor divides the total amount to be invested across periodic purchases of a target asset, reducing the impact of volatility on the overall purchase price.",
     example: "Instead of investing $12,000 at once, you invest $1,000 per month for a year, buying more shares when prices are low and fewer when prices are high.",
     category: "investing",
-    level: "intermediate"
+    level: "intermediate",
+    image: "images/flashcards/dca.png"
   }
 ];
 
