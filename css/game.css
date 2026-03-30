@@ -82,62 +82,22 @@
   font-family: 'Press Start 2P', monospace;
 }
 
-/* --- Building Display --- */
+/* --- Isometric Office Canvas --- */
 .game-building-area {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  min-height: 350px;
-  background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 70%, #0f3460 100%);
+  align-items: center;
+  background: #F5F0E8;
   border: 2px solid #0f3460;
   border-radius: 8px;
-  padding: var(--space-lg);
   margin-bottom: var(--space-lg);
-  position: relative;
   overflow: hidden;
 }
 
-/* Stars background effect */
-.game-building-area::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 40%;
-  background-image: 
-    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 40% 25%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 55% 5%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 70% 18%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1px 1px at 85% 12%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 15% 30%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 60% 30%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 90% 28%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 35% 35%, rgba(255,255,255,0.3), transparent);
-}
-
-/* Ground line */
-.game-building-area::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 40px;
-  background: #0a0a1a;
-  border-top: 2px solid #2a2a4a;
-}
-
-.game-building-img {
-  max-height: 300px;
-  width: auto;
-  image-rendering: auto;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.15));
-  transition: all 0.5s ease;
+.game-canvas {
+  display: block;
+  width: 100%;
+  max-width: 860px;
 }
 
 /* --- Upgrade Shop --- */
@@ -265,6 +225,119 @@
   filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.2));
 }
 
+/* --- Gender Selector --- */
+.game-gender-select {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+
+.game-gender-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #1a1a2e;
+  border: 2px solid #2a2a5a;
+  border-radius: 10px;
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-gender-option:hover {
+  border-color: #5a5aaa;
+  transform: translateY(-2px);
+}
+
+.game-gender-option.selected {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+}
+
+.game-gender-icon {
+  font-size: 1.6rem;
+}
+
+.game-gender-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: #8a8a9a;
+  letter-spacing: 1px;
+}
+
+.game-gender-option.selected .game-gender-label {
+  color: #ffd700;
+}
+
+/* --- Skin Tone Selector --- */
+.game-skin-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-lg);
+}
+
+.game-skin-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.4rem;
+  color: #6a6a8a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.game-skin-options {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.game-skin-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.game-skin-circle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.game-skin-circle.selected {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+  transform: scale(1.1);
+}
+
+.game-hair-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid rgba(255,255,255,0.15);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.game-hair-circle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.game-hair-circle.selected {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+  transform: scale(1.1);
+}
+
 .game-setup-input {
   font-family: 'Press Start 2P', monospace;
   font-size: 0.7rem;
@@ -312,6 +385,110 @@
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
+}
+
+/* --- Dev Tools Row --- */
+.game-dev-tools {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: var(--space-md);
+}
+
+.game-reset-btn,
+.game-dev-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  color: #8a8a9a;
+  background: transparent;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.game-reset-btn:hover {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.game-dev-btn:hover {
+  color: #ffd700;
+  border-color: #ffd700;
+}
+
+/* --- Reset Modal --- */
+.game-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.game-modal {
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+}
+
+.game-modal-title {
+  font-family: 'Press Start 2P', monospace;
+  color: #e2e2e2;
+  font-size: 0.7rem;
+  margin-bottom: 16px;
+}
+
+.game-modal-text {
+  font-family: 'Press Start 2P', monospace;
+  color: #8a8a9a;
+  font-size: 0.45rem;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.game-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.game-modal-cancel,
+.game-modal-confirm {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.game-modal-cancel {
+  background: #2a2a4a;
+  color: #8a8a9a;
+}
+
+.game-modal-cancel:hover {
+  background: #3a3a5a;
+}
+
+.game-modal-confirm {
+  background: #ff6b6b;
+  color: white;
+}
+
+.game-modal-confirm:hover {
+  background: #ff4444;
+  transform: translateY(-1px);
 }
 
 /* --- Coin Popup Animation --- */

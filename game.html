@@ -41,6 +41,35 @@
         <img src="images/game/firm-level-1.png" alt="Your future firm" class="game-setup-building">
         <h1 class="game-setup-title">Build Your<br>Investment Bank</h1>
         <p class="game-setup-subtitle">Earn FinCoins by studying flashcards &<br>acing quizzes. Spend them here!</p>
+        <div class="game-gender-select" id="gender-select">
+          <div class="game-gender-option selected" data-gender="boy" id="gender-boy">
+            <div class="game-gender-icon">👦</div>
+            <div class="game-gender-label">Boy</div>
+          </div>
+          <div class="game-gender-option" data-gender="girl" id="gender-girl">
+            <div class="game-gender-icon">👧</div>
+            <div class="game-gender-label">Girl</div>
+          </div>
+        </div>
+        <div class="game-skin-select" id="skin-select">
+          <div class="game-skin-label">Skin Tone</div>
+          <div class="game-skin-options">
+            <div class="game-skin-circle selected" data-skin="#FFCCBC" style="background:#FFCCBC;" title="Light"></div>
+            <div class="game-skin-circle" data-skin="#F5C5A3" style="background:#F5C5A3;" title="Fair"></div>
+            <div class="game-skin-circle" data-skin="#D4A574" style="background:#D4A574;" title="Medium"></div>
+            <div class="game-skin-circle" data-skin="#C68642" style="background:#C68642;" title="Tan"></div>
+            <div class="game-skin-circle" data-skin="#8D5524" style="background:#8D5524;" title="Brown"></div>
+            <div class="game-skin-circle" data-skin="#5C3317" style="background:#5C3317;" title="Dark"></div>
+          </div>
+        </div>
+        <div class="game-skin-select" id="hair-select">
+          <div class="game-skin-label">Hair Color</div>
+          <div class="game-skin-options">
+            <div class="game-hair-circle selected" data-hair="#1A1A1A" style="background:#1A1A1A;" title="Black"></div>
+            <div class="game-hair-circle" data-hair="#4A3728" style="background:#4A3728;" title="Brown"></div>
+            <div class="game-hair-circle" data-hair="#D4A843" style="background:#D4A843;" title="Blonde"></div>
+          </div>
+        </div>
         <input 
           type="text" 
           id="firm-name-input" 
@@ -70,9 +99,9 @@
           </div>
         </div>
 
-        <!-- Building Display -->
+        <!-- Isometric Office View -->
         <div class="game-building-area">
-          <img id="building-img" class="game-building-img" src="images/game/firm-level-1.png" alt="Your firm">
+          <canvas id="game-canvas" class="game-canvas"></canvas>
         </div>
 
         <!-- Upgrade Shop -->
@@ -80,6 +109,25 @@
           <div class="game-shop-title">⚡ UPGRADES</div>
           <div class="game-upgrades-grid" id="upgrades-grid">
             <!-- Populated by JS -->
+          </div>
+        </div>
+
+
+        <!-- Dev Tools -->
+        <div class="game-dev-tools">
+          <button class="game-reset-btn" id="reset-firm-btn">🔄 Reset Firm</button>
+          <button class="game-dev-btn" id="dev-coins-btn">🪙 +10 FC</button>
+        </div>
+
+        <!-- Reset Confirmation Modal -->
+        <div class="game-modal-overlay" id="reset-modal" style="display:none;">
+          <div class="game-modal">
+            <div class="game-modal-title">⚠️ Reset Firm?</div>
+            <p class="game-modal-text">This will erase all progress and coins. Are you sure?</p>
+            <div class="game-modal-btns">
+              <button class="game-modal-cancel" id="reset-cancel">Cancel</button>
+              <button class="game-modal-confirm" id="reset-confirm">Yes, Reset</button>
+            </div>
           </div>
         </div>
 
@@ -118,6 +166,7 @@
   <script src="js/data.js"></script>
   <script src="js/common.js"></script>
   <script src="js/coins.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.85.2/dist/phaser.min.js"></script>
   <script src="js/game.js"></script>
 
 </body>
