@@ -102,13 +102,32 @@
         <!-- Isometric Office View -->
         <div class="game-building-area">
           <canvas id="game-canvas" class="game-canvas"></canvas>
-        </div>
-
-        <!-- Upgrade Shop -->
-        <div class="game-shop">
-          <div class="game-shop-title">⚡ UPGRADES</div>
-          <div class="game-upgrades-grid" id="upgrades-grid">
-            <!-- Populated by JS -->
+          <!-- Upgrade Shop (shown as computer screen overlay) -->
+          <div class="game-screen-overlay" id="game-screen-overlay" style="display:none;">
+            <div class="game-screen-inner">
+              <div class="game-screen-titlebar">
+                <div class="game-screen-dots">
+                  <span class="dot-red" id="screen-close-btn"></span>
+                  <span class="dot-yellow"></span>
+                  <span class="dot-green"></span>
+                </div>
+                <div class="game-screen-title">⚡ UPGRADES</div>
+              </div>
+              <div class="game-screen-content">
+                <div class="game-upgrades-grid" id="upgrades-grid">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+              <div class="game-screen-taskbar">
+                <div class="game-screen-taskbar-icons">
+                  <span class="game-screen-taskbar-icon" style="background:#1565C0;"></span>
+                  <span class="game-screen-taskbar-icon" style="background:#1E3A5F;"></span>
+                  <span class="game-screen-taskbar-icon" style="background:#1E3A5F;"></span>
+                  <span class="game-screen-taskbar-icon" style="background:#1E3A5F;"></span>
+                </div>
+                <span class="game-screen-hint">ESC to close</span>
+              </div>
+            </div>
           </div>
         </div>
 

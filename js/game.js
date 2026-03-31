@@ -6,17 +6,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   const GAME_KEY = 'f4f_game_state';
   const GRID_W = 10, GRID_H = 8;
+  const INTERN_SLOTS = [
+    {gx: 2, gy: 1}, {gx: 3, gy: 1}, {gx: 4, gy: 1}, {gx: 5, gy: 1}, {gx: 6, gy: 1}, {gx: 7, gy: 1}, {gx: 8, gy: 1},
+    {gx: 1, gy: 3}, {gx: 2, gy: 3}, {gx: 3, gy: 3}, {gx: 4, gy: 3}, {gx: 5, gy: 3}, {gx: 6, gy: 3}, {gx: 7, gy: 3}, {gx: 8, gy: 3},
+    {gx: 2, gy: 5}, {gx: 3, gy: 5}, {gx: 4, gy: 5}, {gx: 5, gy: 5}, {gx: 6, gy: 5}, {gx: 7, gy: 5}, {gx: 8, gy: 5}
+  ];
 
   const UPGRADES = {
-    office: { name:'Office', icon:'🏢', maxTier:3, tiers:[
-      {name:'Desk & Chair',cost:10},{name:'Office Floor',cost:50},{name:'Corner Office',cost:200}
-    ]},
-    team: { name:'Team', icon:'👔', maxTier:3, tiers:[
-      {name:'Intern',cost:15},{name:'Analyst',cost:75},{name:'Managing Director',cost:300}
-    ]},
-    deals: { name:'Deals', icon:'📊', maxTier:3, tiers:[
-      {name:'First Pitch',cost:20},{name:'Deal Pipeline',cost:100},{name:'Mega Merger',cost:500}
-    ]}
+    intern_station: { 
+      name: 'Increase Workforce', 
+      icon: '👔', 
+      maxTier: 22, 
+      baseCost: 10,
+      costIncrement: 10
+    }
   };
 
   // ===== DOM =====
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gender = document.querySelector('.game-gender-option.selected')?.dataset.gender || 'boy';
     const skinColor = document.querySelector('.game-skin-circle.selected')?.dataset.skin || '#FFCCBC';
     const hairColor = document.querySelector('.game-hair-circle.selected')?.dataset.hair || '#1A1A1A';
-    gameState = { firmName: name, gender: gender, skinColor: skinColor, hairColor: hairColor, level: 1, upgrades: { office:0, team:0, deals:0 }, totalSpent: 0, parkingLot: generateParkingLot() };
+    gameState = { firmName: name, gender: gender, skinColor: skinColor, hairColor: hairColor, level: 1, upgrades: { intern_station:0 }, totalSpent: 0, parkingLot: generateParkingLot() };
     saveGame();
   }
 
@@ -70,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function calcLevel() {
     const t = Object.values(gameState.upgrades).reduce((a,b) => a+b, 0);
-    if (t >= 6) return 4; if (t >= 3) return 3; if (t >= 1) return 2; return 1;
+    if (t >= 15) return 4; if (t >= 8) return 3; if (t >= 1) return 2; return 1;
   }
 
   // ===== PHASER SCENE =====
@@ -101,9 +104,27 @@ document.addEventListener('DOMContentLoaded', () => {
       this._chairPos = null;
       this._blueScreen = null;
       this._atDesk = false;
+      this._deskPos = null;
+      this._computerPrompt = null;
+      this._computerGlow = null;
 
       this.drawBackground();
       this.buildRoom();
+
+      // === COMPUTER CLICK HANDLER (global scene click) ===
+      const COMPUTER_CLICK_RANGE = 38; // ~1cm at 96dpi
+      this.input.on('pointerdown', (pointer) => {
+        if (!this.player || !this._deskPos || this._blueScreen) return;
+        const p = this.player;
+        const dp = this._deskPos;
+        const playerDist = Math.sqrt((p.x - dp.x) ** 2 + (p.y - dp.y) ** 2);
+        if (playerDist > COMPUTER_CLICK_RANGE) return;
+        // Player is within 1cm of the computer — open screen
+        if (!this._atDesk) {
+          this._atDesk = true;
+          this._openComputerScreen();
+        }
+      });
 
       // === PLAYER CHARACTER ===
       const isGirl = gameState && gameState.gender === 'girl';
@@ -125,13 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
         walkTimer: 0,
         moving: false,
         facing: 'down',
+        isPlayer: true
       };
       // Derive hand color
       const sc = this.player.skinCol;
       const _sr = (sc >> 16) & 0xFF, _sg = (sc >> 8) & 0xFF, _sb = sc & 0xFF;
       this.player.handCol = ((Math.max(0,_sr-15)) << 16) | ((Math.max(0,_sg-10)) << 8) | Math.max(0,_sb-5);
 
-      this.drawPlayer();
+      this.drawCharacter(this.player);
 
       // WASD + Arrow keys + E
       this.keys = this.input.keyboard.addKeys({
@@ -163,9 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
       this._doorAnimating = false;
     }
 
-    // ===== DRAW PLAYER =====
-    drawPlayer() {
-      const p = this.player;
+    // ===== DRAW CHARACTER =====
+    drawCharacter(p) {
+      if (!p || !p.g) return;
       const g = p.g;
       const TW = this.TW, TH = this.TH;
       const s = TW * 0.04;
@@ -179,10 +201,17 @@ document.addEventListener('DOMContentLoaded', () => {
       g.fillStyle(0x000000, 0.1); g.fillEllipse(0, TH*0.08, s*5, s*2);
 
       // Walk offsets
-      const legSwing = mv ? [[-s*0.8, s*0.8], [0, 0], [s*0.8, -s*0.8], [0, 0]][wf] : [0, 0];
+      const legSwing = mv ? [[-s*0.5, s*0.5], [0, 0], [s*0.5, -s*0.5], [0, 0]][wf] : [0, 0];
       const armSwing = mv ? ((wf % 2 === 0) ? s*0.5 : -s*0.5) : 0;
 
       // Shared drawing helpers
+      const pantsCol = 0x2C3E50;
+      const legT = -s * 4.4; // Updated: Legs start lower to make room for hips
+      const legH = s * 4.4;   // Updated: Shorter legs
+      const drawHip = (ox) => {
+        // Draw the hips as an iso box to bridge legs and torso
+        this.drawIsoBox(g, ox, legT, 0.14, 0.1, s*1.1, pantsCol, this.shade(pantsCol,-10), this.shade(pantsCol,10));
+      };
       const drawTorso = (ox) => {
         this.drawIsoBox(g, ox, -s*5.5, 0.14, 0.1, s*3.5, p.col, this.shade(p.col,-30), this.shade(p.col,20));
       };
@@ -196,9 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (dir === 'down') {
         // ========== DOWN (front-facing) ==========
-        g.fillStyle(0x2C3E50);
-        g.fillRect(-s*1.2, -s*3 + legSwing[0], s*0.8, s*2.5);
-        g.fillRect(s*0.4, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(pantsCol);
+        g.fillRect(-s*1.2, legT + legSwing[0], s*0.8, legH);
+        g.fillRect(s*0.4, legT + legSwing[1], s*0.8, legH);
+        drawHip(0);
         drawTorso(0);
         g.fillStyle(this.shade(p.col,-15));
         g.fillRect(-s*2.2, -s*7.5 + armSwing, s*0.7, s*3);
@@ -214,9 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'up') {
         // ========== UP (back-facing) ==========
-        g.fillStyle(0x2C3E50);
-        g.fillRect(-s*1.2, -s*3 + legSwing[0], s*0.8, s*2.5);
-        g.fillRect(s*0.4, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(pantsCol);
+        g.fillRect(-s*1.2, legT + legSwing[0], s*0.8, legH);
+        g.fillRect(s*0.4, legT + legSwing[1], s*0.8, legH);
+        drawHip(0);
         drawTorso(0);
         g.fillStyle(this.shade(p.col,-15));
         g.fillRect(-s*2.2, -s*7.5 + armSwing, s*0.7, s*3);
@@ -230,11 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'left') {
         // ========== LEFT (side profile facing left) ==========
-        g.fillStyle(0x1F2D3D); g.fillRect(-s*0.3, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(this.shade(pantsCol, -15)); g.fillRect(-s*0.3, legT + legSwing[1], s*0.8, legH);
+        drawHip(0);
         drawTorso(0);
         g.fillStyle(this.shade(p.col,-25)); g.fillRect(-s*0.3, -s*7.5 - armSwing, s*0.7, s*3);
         g.fillStyle(this.shade(p.handCol,-10)); g.fillRect(-s*0.3, -s*4.8 - armSwing, s*0.8, s*0.8);
-        g.fillStyle(0x2C3E50); g.fillRect(-s*0.3, -s*3 + legSwing[0], s*0.8, s*2.5);
+        g.fillStyle(pantsCol); g.fillRect(-s*0.3, legT + legSwing[0], s*0.8, legH);
         g.fillStyle(this.shade(p.col,-15)); g.fillRect(-s*0.5, -s*7.5 + armSwing, s*0.7, s*3);
         g.fillStyle(p.handCol); g.fillRect(-s*0.5, -s*4.8 + armSwing, s*0.8, s*0.8);
         drawHead(0); drawHairTop(0);
@@ -244,11 +276,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'right') {
         // ========== RIGHT (side profile facing right) ==========
-        g.fillStyle(0x1F2D3D); g.fillRect(-s*0.3, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(this.shade(pantsCol,-15)); g.fillRect(-s*0.3, legT + legSwing[1], s*0.8, legH);
+        drawHip(0);
         drawTorso(0);
         g.fillStyle(this.shade(p.col,-25)); g.fillRect(-s*0.3, -s*7.5 - armSwing, s*0.7, s*3);
         g.fillStyle(this.shade(p.handCol,-10)); g.fillRect(-s*0.3, -s*4.8 - armSwing, s*0.8, s*0.8);
-        g.fillStyle(0x2C3E50); g.fillRect(-s*0.3, -s*3 + legSwing[0], s*0.8, s*2.5);
+        g.fillStyle(pantsCol); g.fillRect(-s*0.3, legT + legSwing[0], s*0.8, legH);
         g.fillStyle(this.shade(p.col,-15)); g.fillRect(s*0.5, -s*7.5 + armSwing, s*0.7, s*3);
         g.fillStyle(p.handCol); g.fillRect(s*0.5, -s*4.8 + armSwing, s*0.8, s*0.8);
         drawHead(0); drawHairTop(0);
@@ -258,11 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'downright') {
         // ========== DOWN-RIGHT (3/4 front, turned right) ==========
-        g.fillStyle(0x1F2D3D); g.fillRect(-s*0.8, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(this.shade(pantsCol,-15)); g.fillRect(-s*0.8, legT + legSwing[1], s*0.8, legH);
+        drawHip(s*0.4);
         drawTorso(s*0.4);
         g.fillStyle(this.shade(p.col,-25)); g.fillRect(-s*2.0, -s*7.5 - armSwing, s*0.7, s*3);
         g.fillStyle(this.shade(p.handCol,-10)); g.fillRect(-s*2.0, -s*4.8 - armSwing, s*0.8, s*0.8);
-        g.fillStyle(0x2C3E50); g.fillRect(s*0.6, -s*3 + legSwing[0], s*0.8, s*2.5);
+        g.fillStyle(pantsCol); g.fillRect(s*0.6, legT + legSwing[0], s*0.8, legH);
         g.fillStyle(this.shade(p.col,-15)); g.fillRect(s*2.0, -s*7.5 + armSwing, s*0.7, s*3);
         g.fillStyle(p.handCol); g.fillRect(s*2.0, -s*4.8 + armSwing, s*0.8, s*0.8);
         drawHead(s*0.4); drawHairTop(s*0.4);
@@ -273,11 +307,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'downleft') {
         // ========== DOWN-LEFT (3/4 front, turned left) ==========
-        g.fillStyle(0x1F2D3D); g.fillRect(s*0.4, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(this.shade(pantsCol,-15)); g.fillRect(s*0.4, legT + legSwing[1], s*0.8, legH);
+        drawHip(-s*0.4);
         drawTorso(-s*0.4);
         g.fillStyle(this.shade(p.col,-25)); g.fillRect(s*2.0, -s*7.5 - armSwing, s*0.7, s*3);
         g.fillStyle(this.shade(p.handCol,-10)); g.fillRect(s*2.0, -s*4.8 - armSwing, s*0.8, s*0.8);
-        g.fillStyle(0x2C3E50); g.fillRect(-s*0.6, -s*3 + legSwing[0], s*0.8, s*2.5);
+        g.fillStyle(pantsCol); g.fillRect(-s*0.6, legT + legSwing[0], s*0.8, legH);
         g.fillStyle(this.shade(p.col,-15)); g.fillRect(-s*2.0, -s*7.5 + armSwing, s*0.7, s*3);
         g.fillStyle(p.handCol); g.fillRect(-s*2.0, -s*4.8 + armSwing, s*0.8, s*0.8);
         drawHead(-s*0.4); drawHairTop(-s*0.4);
@@ -288,11 +323,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'upright') {
         // ========== UP-RIGHT (3/4 back, turned right) ==========
-        g.fillStyle(0x1F2D3D); g.fillRect(-s*0.8, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(this.shade(pantsCol,-15)); g.fillRect(-s*0.8, legT + legSwing[1], s*0.8, legH);
+        drawHip(s*0.4);
         drawTorso(s*0.4);
         g.fillStyle(this.shade(p.col,-25)); g.fillRect(-s*2.0, -s*7.5 - armSwing, s*0.7, s*3);
         g.fillStyle(this.shade(p.handCol,-10)); g.fillRect(-s*2.0, -s*4.8 - armSwing, s*0.8, s*0.8);
-        g.fillStyle(0x2C3E50); g.fillRect(s*0.6, -s*3 + legSwing[0], s*0.8, s*2.5);
+        g.fillStyle(pantsCol); g.fillRect(s*0.6, legT + legSwing[0], s*0.8, legH);
         g.fillStyle(this.shade(p.col,-15)); g.fillRect(s*2.0, -s*7.5 + armSwing, s*0.7, s*3);
         g.fillStyle(p.handCol); g.fillRect(s*2.0, -s*4.8 + armSwing, s*0.8, s*0.8);
         drawHead(s*0.4);
@@ -302,11 +338,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } else if (dir === 'upleft') {
         // ========== UP-LEFT (3/4 back, turned left) ==========
-        g.fillStyle(0x1F2D3D); g.fillRect(s*0.4, -s*3 + legSwing[1], s*0.8, s*2.5);
+        g.fillStyle(this.shade(pantsCol,-15)); g.fillRect(s*0.4, legT + legSwing[1], s*0.8, legH);
+        drawHip(-s*0.4);
         drawTorso(-s*0.4);
         g.fillStyle(this.shade(p.col,-25)); g.fillRect(s*2.0, -s*7.5 - armSwing, s*0.7, s*3);
         g.fillStyle(this.shade(p.handCol,-10)); g.fillRect(s*2.0, -s*4.8 - armSwing, s*0.8, s*0.8);
-        g.fillStyle(0x2C3E50); g.fillRect(-s*0.6, -s*3 + legSwing[0], s*0.8, s*2.5);
+        g.fillStyle(pantsCol); g.fillRect(-s*0.6, legT + legSwing[0], s*0.8, legH);
         g.fillStyle(this.shade(p.col,-15)); g.fillRect(-s*2.0, -s*7.5 + armSwing, s*0.7, s*3);
         g.fillStyle(p.handCol); g.fillRect(-s*2.0, -s*4.8 + armSwing, s*0.8, s*0.8);
         drawHead(-s*0.4);
@@ -316,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       g.setPosition(p.x, p.y);
-      g.setDepth(1000);
+      g.setDepth(p.isPlayer ? 1000 : ((p.y - this.OY) * 2 / this.TH) + 1);
     }
 
     // ===== UPDATE (runs every frame) =====
@@ -467,33 +504,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // === CHAIR / BLUE SCREEN ===
-      const eFromPhaser = Phaser.Input.Keyboard.JustDown(this.keys.e);
-      if (eFromPhaser) this._ePressed = true;
+      // === COMPUTER PROXIMITY PROMPT ===
+      const COMPUTER_CLICK_RANGE = 38; // ~1cm at 96dpi
+      if (this._deskPos && !this._blueScreen) {
+        const dp = this._deskPos;
+        const dist = Math.sqrt((p.x - dp.x) ** 2 + (p.y - dp.y) ** 2);
 
-      if (this._chairPos) {
-        const cx = this._chairPos.x, cy = this._chairPos.y;
-        const distChair = Math.sqrt((p.x - cx) ** 2 + (p.y - cy) ** 2);
-        const chairRange = 86; // ~2cm from chair edge
-
-        if (this._ePressed && distChair < chairRange) {
-          this._ePressed = false;
-          if (!this._atDesk) {
-            this._atDesk = true;
-            const W = this.cameras.main.width, H = this.cameras.main.height;
-            this._blueScreen = this.add.graphics();
-            this._blueScreen.fillStyle(0x1565C0, 0.88);
-            this._blueScreen.fillRect(W * 0.05, H * 0.05, W * 0.9, H * 0.9);
-            this._blueScreen.setDepth(3000);
-          } else {
-            this._atDesk = false;
-            if (this._blueScreen) { this._blueScreen.destroy(); this._blueScreen = null; }
+        if (dist <= COMPUTER_CLICK_RANGE) {
+          // Show prompt + glow when in range
+          if (!this._computerPrompt) {
+            this._computerPrompt = this.add.text(dp.x, dp.y - dp.promptOffsetY * 0.55, 'Click', {
+              fontSize: '8px',
+              fontFamily: '"Press Start 2P", monospace',
+              color: '#00FF88',
+            }).setOrigin(0.5).setDepth(2000).setAlpha(0.9);
+            // Gentle pulsing animation
+            this.tweens.add({
+              targets: this._computerPrompt,
+              alpha: 0.45,
+              duration: 800,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
           }
+          if (!this._computerGlow && this._coComputer) {
+            this._coComputer.setAlpha(0.8);
+          }
+          // Only show pointer cursor when mouse is hovering near the computer
+          const mouseX = this.input.activePointer.worldX;
+          const mouseY = this.input.activePointer.worldY;
+          const mouseDist = Math.sqrt((mouseX - dp.x) ** 2 + (mouseY - dp.y) ** 2);
+          if (mouseDist <= COMPUTER_CLICK_RANGE) {
+            this.input.setDefaultCursor('pointer');
+          } else {
+            this.input.setDefaultCursor('default');
+          }
+        } else {
+          // Remove prompt when out of range
+          if (this._computerPrompt) {
+            this._computerPrompt.destroy();
+            this._computerPrompt = null;
+          }
+          if (this._coComputer) {
+            this._coComputer.setAlpha(1);
+          }
+          this.input.setDefaultCursor('default');
         }
+      } else if (this._blueScreen && this._computerPrompt) {
+        this._computerPrompt.destroy();
+        this._computerPrompt = null;
       }
-      this._ePressed = false;
 
-      this.drawPlayer();
+      this.drawCharacter(this.player);
     }
 
     toScr(gx, gy) {
@@ -935,11 +998,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // === BORDERS ===
       const bw2 = 3; // border width
 
-      // Black border around the entire canvas
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = bw2 * 2; // doubled because half is clipped by canvas edge
-      ctx.strokeRect(0, 0, W, H);
-
       // Dividing line between office space and parking lot — with a doorway opening on the left
       const doorStart = W * 0.10;
       const doorEnd = doorStart + W * 0.126;
@@ -1086,61 +1144,87 @@ document.addEventListener('DOMContentLoaded', () => {
       return g;
     }
 
-    createPerson(gx, gy, color, isGirl, skinHex, hairHex) {
-      const p = this.toScr(gx, gy);
-      const col = color || (isGirl ? 0xE91E63 : 0x1565C0);
-      const skinCol = skinHex ? parseInt(skinHex.replace('#',''), 16) : 0xFFCCBC;
-      const hairCol = hairHex ? parseInt(hairHex.replace('#',''), 16) : 0x1A1A1A;
-      // Derive a slightly darker hand color from the skin
-      const sr = (skinCol >> 16) & 0xFF, sg = (skinCol >> 8) & 0xFF, sb = skinCol & 0xFF;
-      const handCol = ((Math.max(0,sr-15)) << 16) | ((Math.max(0,sg-10)) << 8) | Math.max(0,sb-5);
-      const g = this.add.graphics();
-      const TH = this.TH, TW = this.TW;
-      const s = TW * 0.04;
+    spawnIntern(hx, hy) {
+      const startPos = this.toScr(hx, hy);
+      const intern = {
+        g: this.add.graphics(),
+        x: startPos.x,
+        y: startPos.y,
+        col: 0x1E88E5, // Blue suit
+        isGirl: false,
+        skinCol: 0xFFCCBC,
+        hairCol: 0x1A1A1A,
+        // Approximate hand color logic from old createPerson
+        handCol: 0xF0BBAB, 
+        facing: 'down',
+        moving: false,
+        walkFrame: 0,
+        walkTimer: 0,
+        isPlayer: false,
+        home: { gx: hx, gy: hy },
+        aiState: 'WORKING'
+      };
 
-      // Shadow
-      g.fillStyle(0x000000, 0.1); g.fillEllipse(0, TH*0.08, s*5, s*2);
-      // Legs
-      g.fillStyle(0x2C3E50); g.fillRect(-s*1.2, -s*3, s*0.8, s*2.5); g.fillRect(s*0.4, -s*3, s*0.8, s*2.5);
-      // Torso
-      this.drawIsoBox(g, 0, -s*5.5, 0.14, 0.1, s*3.5, col, this.shade(col,-30), this.shade(col,20));
-      // Arms
-      g.fillStyle(this.shade(col,-15)); g.fillRect(-s*2.2, -s*7.5, s*0.7, s*3); g.fillRect(s*1.5, -s*7.5, s*0.7, s*3);
-      // Hands
-      g.fillStyle(handCol); g.fillRect(-s*2.2, -s*4.8, s*0.8, s*0.8); g.fillRect(s*1.5, -s*4.8, s*0.8, s*0.8);
-      // Head
-      g.fillStyle(skinCol); g.fillCircle(0, -s*10, s*1.8);
-      // Hair
-      g.fillStyle(hairCol);
-      if (isGirl) {
-        // Longer hair — full top + side strands
-        g.beginPath(); g.arc(0, -s*11, s*1.8, Math.PI, Math.PI*2); g.closePath(); g.fillPath();
-        // Left hair strand
-        g.fillRect(-s*1.7, -s*11, s*0.6, s*4.5);
-        // Right hair strand
-        g.fillRect(s*1.1, -s*11, s*0.6, s*4.5);
-      } else {
-        // Short hair — just the top
-        g.beginPath(); g.arc(0, -s*11, s*1.8, Math.PI, Math.PI*2); g.closePath(); g.fillPath();
-      }
-      // Eyes
-      g.fillStyle(0x333333); g.fillRect(-s*0.8, -s*10.2, s*0.5, s*0.5); g.fillRect(s*0.3, -s*10.2, s*0.5, s*0.5);
+      intern.g.setPosition(intern.x, intern.y);
+      this.drawCharacter(intern);
+      
+      this.roomObjects.push(intern.g);
+      if (!this.interns) this.interns = [];
+      this.interns.push(intern);
+      
+      const roamTimer = this.time.addEvent({
+        delay: 5000 + Math.random() * 10000,
+        loop: true,
+        callback: () => {
+          if (intern.aiState === 'WORKING') {
+            intern.aiState = 'WANDERING';
+            let wgx = Math.floor(Math.random() * 8) + 1;
+            let wgy = Math.floor(Math.random() * 6) + 1;
+            if (wgx < 3 && wgy < 3) wgx = 5;
+            const target = this.toScr(wgx, wgy);
+            
+            const dx = target.x - intern.x;
+            const dy = target.y - intern.y;
+            if (Math.abs(dx) > Math.abs(dy)) {
+              intern.facing = dx > 0 ? 'right' : 'left';
+            } else {
+              intern.facing = dy > 0 ? 'down' : 'up';
+            }
+            intern.moving = true;
 
-      g.setPosition(p.x, p.y);
-      g.setDepth(gx + gy + 0.5);
+            this.tweens.add({
+              targets: intern, x: target.x, y: target.y,
+              duration: 3000 + Math.random() * 2000,
+              ease: 'Linear',
+              onComplete: () => { intern.moving = false; intern.facing = 'down'; }
+            });
+            roamTimer.delay = 3000 + Math.random() * 5000;
+          } else {
+            intern.aiState = 'WORKING';
+            const target = this.toScr(intern.home.gx, intern.home.gy);
+            
+            const dx = target.x - intern.x;
+            const dy = target.y - intern.y;
+            if (Math.abs(dx) > Math.abs(dy)) {
+              intern.facing = dx > 0 ? 'right' : 'left';
+            } else {
+              intern.facing = dy > 0 ? 'down' : 'up';
+            }
+            intern.moving = true;
 
-      // Interactive
-      g.setInteractive(new Phaser.Geom.Circle(0, -s*5, s*6), Phaser.Geom.Circle.Contains);
-      g.on('pointerover', () => { g.setScale(1.05); this.input.setDefaultCursor('pointer'); });
-      g.on('pointerout', () => { g.setScale(1); this.input.setDefaultCursor('default'); });
-
-      // Bobbing tween
-      this.tweens.add({
-        targets: g, y: p.y + 2, duration: 800 + Math.random()*400,
-        yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Math.random()*500
+            this.tweens.add({
+              targets: intern, x: target.x, y: target.y,
+              duration: 3000 + Math.random() * 2000,
+              ease: 'Linear',
+              onComplete: () => { intern.moving = false; intern.facing = 'up'; } // Face desk when home
+            });
+            roamTimer.delay = 10000 + Math.random() * 10000;
+          }
+        }
       });
-
-      return g;
+      
+      if (!this.internTimers) this.internTimers = [];
+      this.internTimers.push(roamTimer);
     }
 
     createWhiteboard(gx, gy) {
@@ -1158,10 +1242,67 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===== BUILD ROOM =====
+    _openComputerScreen() {
+      const overlay = document.getElementById('game-screen-overlay');
+      if (!overlay) return;
+
+      // Show the HTML overlay
+      overlay.style.display = 'flex';
+      // Re-trigger the animation
+      overlay.style.animation = 'none';
+      overlay.offsetHeight; // force reflow
+      overlay.style.animation = '';
+
+      // Render upgrades into the overlay
+      renderUpgrades();
+
+      // Mark state
+      this._blueScreen = true;
+
+      // Close button (red dot)
+      const closeBtn = document.getElementById('screen-close-btn');
+      this._screenCloseHandler = () => {
+        this._atDesk = false;
+        this._closeComputerScreen();
+      };
+      closeBtn.addEventListener('click', this._screenCloseHandler);
+
+      // ESC key to close
+      this._escHandler = (evt) => {
+        if (evt.code === 'Escape') {
+          this._atDesk = false;
+          this._closeComputerScreen();
+        }
+      };
+      document.addEventListener('keydown', this._escHandler);
+    }
+
+    _closeComputerScreen() {
+      const overlay = document.getElementById('game-screen-overlay');
+      if (overlay) overlay.style.display = 'none';
+      this._blueScreen = null;
+
+      // Clean up event listeners
+      const closeBtn = document.getElementById('screen-close-btn');
+      if (closeBtn && this._screenCloseHandler) {
+        closeBtn.removeEventListener('click', this._screenCloseHandler);
+        this._screenCloseHandler = null;
+      }
+      if (this._escHandler) {
+        document.removeEventListener('keydown', this._escHandler);
+        this._escHandler = null;
+      }
+    }
+
     buildRoom() {
       // Destroy old objects
       this.roomObjects.forEach(o => { if (o.destroy) o.destroy(); });
       this.roomObjects = [];
+      this.interns = [];
+      // Clean up computer interaction state
+      if (this._computerPrompt) { this._computerPrompt.destroy(); this._computerPrompt = null; }
+      this._deskPos = null;
+      this._coComputer = null;
       // Clear colliders but keep car colliders (added in drawBackground)
       this.colliders = this.colliders.filter(c => c.isCar);
 
@@ -1244,6 +1385,16 @@ document.addEventListener('DOMContentLoaded', () => {
         this.roomObjects.push(dg);
         this.colliders.push({ x: furnX - ds*7.5, y: deskY, w: ds*15, h: ds*7.5 });
 
+        // Store desk position for proximity-based click detection (handled in create/update)
+        const hitCX = furnX;
+        const hitCY = deskY + ds*2;
+        this._deskPos = {
+          x: hitCX,
+          y: hitCY,
+          clickRadius: Math.max(ds * 15, 80), // generous click area around the computer
+          promptOffsetY: ds * 8 // offset for the "Click" prompt above the desk
+        };
+        this._coComputer = dg;
 
         // Corner office glass wall collisions (with openings to walk through)
         // Right wall (with opening at bottom)
@@ -1296,37 +1447,25 @@ document.addEventListener('DOMContentLoaded', () => {
         this._doorColliders.push(bDoorCol);
       }
 
-      // Base furniture (main office space)
-      const isGirl = gameState && gameState.gender === 'girl';
-      const skinHex = gameState ? gameState.skinColor : null;
-      const hairHex = gameState ? gameState.hairColor : null;
-      addObj(this.createDesk(4, 2), 4, 2, TW*0.85, TH*0.6, 0, -TH*0.1);  // desk
-      addObj(this.createChair(4, 3), 4, 3, TW*0.3, TH*0.3, 0, 0);        // chair
-      addObj(this.createPlant(3, 1), 3, 1, TW*0.2, TH*0.35, 0, -TH*0.1); // plant
+        // Main office furniture — handled via Intern Stations
+        // Clear old timers
+        if (this.internTimers) {
+          this.internTimers.forEach(t => t.remove());
+          this.internTimers = [];
+        }
 
-      if (ups.office >= 1) {
-        addObj(this.createDesk(5, 3), 5, 3, TW*0.85, TH*0.6, 0, -TH*0.1);
-        addObj(this.createChair(5, 4), 5, 4, TW*0.3, TH*0.3, 0, 0);
-        addObj(this.createCooler(1, 6), 1, 6, TW*0.22, TH*0.4, 0, -TH*0.2);
-      }
-      if (ups.office >= 2) {
-        addObj(this.createDesk(7, 2), 7, 2, TW*0.85, TH*0.6, 0, -TH*0.1);
-        addObj(this.createChair(7, 3), 7, 3, TW*0.3, TH*0.3, 0, 0);
-        addObj(this.createCabinet(8, 1), 8, 1, TW*0.35, TH*0.4, 0, -TH*0.1);
-      }
-      if (ups.office >= 3) {
-        addObj(this.createDesk(4, 5), 4, 5, TW*0.85, TH*0.6, 0, -TH*0.1);
-        addObj(this.createChair(4, 6), 4, 6, TW*0.3, TH*0.3, 0, 0);
-        addObj(this.createShelf(9, 1), 9, 1, TW*0.8, TH*0.5, 0, -TH*0.2);
-      }
-
-      if (ups.team >= 1) add(this.createPerson(5, 4, 0x2E7D32));
-      if (ups.team >= 2) add(this.createPerson(7, 3, 0xC62828));
-      if (ups.team >= 3) add(this.createPerson(4, 6, 0x6A1B9A));
-
-      if (ups.deals >= 1) addObj(this.createWhiteboard(1, 3), 1, 3, TW*0.5, TH*0.3, 0, -TH*0.2);
-      if (ups.deals >= 2) addObj(this.createPlant(8, 5), 8, 5, TW*0.2, TH*0.35, 0, -TH*0.1);
-      if (ups.deals >= 3) addObj(this.createTable(6, 5), 6, 5, TW*0.9, TH*0.5, 0, -TH*0.05);
+        // Add 1 desk + chair + intern for each upgrade level
+        const itier = ups.intern_station || 0;
+        for (let i = 0; i < Math.min(itier, INTERN_SLOTS.length); i++) {
+          const slot = INTERN_SLOTS[i];
+          
+          // Spawn Desk
+          addObj(this.createDesk(slot.gx, slot.gy), slot.gx, slot.gy, TW*0.85, TH*0.6, 0, -TH*0.1);
+          // Spawn Chair
+          addObj(this.createChair(slot.gx, slot.gy+1), slot.gx, slot.gy+1, TW*0.3, TH*0.3, 0, 0);
+          // Spawn Intern
+          this.spawnIntern(slot.gx, slot.gy+1);
+        }
     }
 
     refreshRoom() {
@@ -1352,7 +1491,7 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas: document.getElementById('game-canvas'),
       width: w,
       height: h,
-      backgroundColor: '#87CEEB',
+      backgroundColor: '#000000',
       scene: [FirmScene],
       banner: false
     });
@@ -1371,10 +1510,10 @@ document.addEventListener('DOMContentLoaded', () => {
     upGrid.innerHTML = '';
     const coins = F4FCoins.get();
     Object.entries(UPGRADES).forEach(([key, up]) => {
-      const tier = gameState.upgrades[key];
+      const tier = gameState.upgrades[key] || 0;
       const maxed = tier >= up.maxTier;
-      const next = maxed ? null : up.tiers[tier];
-      const afford = next ? coins >= next.cost : false;
+      const nextCost = up.baseCost + (tier * up.costIncrement);
+      const afford = !maxed && coins >= nextCost;
       const card = document.createElement('div');
       card.className = 'game-upgrade-card';
       if (maxed) card.classList.add('game-upgrade-maxed');
@@ -1382,9 +1521,9 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <div class="game-upgrade-icon">${up.icon}</div>
         <div class="game-upgrade-name">${up.name}</div>
-        <div class="game-upgrade-tier">${maxed ? `Tier ${tier}/${up.maxTier}` : `${next.name} (Tier ${tier+1}/${up.maxTier})`}</div>
+        <div class="game-upgrade-tier">Desk Station (${tier}/${up.maxTier})</div>
         ${maxed ? '<div class="game-upgrade-maxed-text">✓ MAXED</div>' :
-          `<div class="game-upgrade-cost${afford ? ' game-affordable' : ''}">🪙 ${next.cost} FC</div>`}
+          `<div class="game-upgrade-cost${afford ? ' game-affordable' : ''}">🪙 ${nextCost} FC</div>`}
       `;
       if (!maxed && afford) card.addEventListener('click', () => purchaseUpgrade(key));
       upGrid.appendChild(card);
@@ -1393,11 +1532,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function purchaseUpgrade(key) {
     const up = UPGRADES[key];
-    const tier = gameState.upgrades[key];
+    const tier = gameState.upgrades[key] || 0;
     if (tier >= up.maxTier) return;
-    if (!F4FCoins.spend(up.tiers[tier].cost)) return;
+    const cost = up.baseCost + (tier * up.costIncrement);
+    if (!F4FCoins.spend(cost)) return;
     gameState.upgrades[key] = tier + 1;
-    gameState.totalSpent += up.tiers[tier].cost;
+    gameState.totalSpent += cost;
     const oldLvl = gameState.level, newLvl = calcLevel();
     saveGame(); renderHUD(); renderUpgrades();
     // Refresh Phaser room
